@@ -1,41 +1,31 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
 
-  const [soket , setSoket] = useState<T>()
-  const [messageValue , setMessageValue] = useState('')
+  const [soket , setSoket] = useState()
+  const [message , setMessage] = useState('')
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>){
-    setMessageValue(e.target.value)
-  }
-
-  function sendMessage(){
-    if(!soket){
-      return;
-    } 
-    soket.send(messageValue)
+  const handleClick =()=>{
+    soket.send(message)
   }
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8000')
+    const ws = new WebSocket("ws://localhost:8000");
     setSoket(ws)
     ws.onmessage = (ev)=>{
-      alert(ev.data)
+      console.log(ev.data)
     }
-  }, [])
-  
+  }, []);
 
   return (
     <div>
       <input onChange={(e)=>{
-        handleChange(e)
-      }} type="text" placeholder='Enter text' />
-      <button onClick={()=>{
-        sendMessage()
-      }}>Send MSG</button>
+        setMessage(e.target.value)
+      }} type="text" placeholder="Enter text" />
+      <button onClick={handleClick}>Send MSG</button>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
