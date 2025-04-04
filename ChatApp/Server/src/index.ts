@@ -1,21 +1,42 @@
 import { WebSocketServer, WebSocket } from "ws";
 
-const ws = new WebSocketServer({
-  port: 8001,
+const wss = new WebSocketServer({
+  port: 8000,
 });
 
-let userCount = 0;
-let allSokets: WebSocket[] = [];
+interface User {
+  soket: WebSocket;
+  roomId: string;
+}
 
-ws.on("connection", (soket) => {
-  allSokets.push(soket);
-  console.log(`user Connected #${userCount}`);
+const users: User[] = [];
 
+wss.on("connection", (soket) => {
   soket.on("message", (message) => {
-    for(let i=0; i<allSokets.length ; i++){
-        let user = allSokets[i]
-        user.send( `this message is from ${allSokets[i].url} ${message.toString()}`)
+    const parseMessage = JSON.parse(message.toString());
+
+    if (parseMessage.type == "join") {
+      users.push({
+        soket: soket,
+        roomId: parseMessage.roomId,
+      });
+
+      soket.send("you are joined in room");
+    }
+
+    if (parseMessage.type == "chat") {
+      let currentUserRoomId = null;
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].soket == soket) {
+          currentUserRoomId = users[i].roomId;
+        }
+      }
+
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].roomId == currentUserRoomId) {
+          users[i].soket.send(`Message from server ${parseMessage.message}`);
+        }
+      }
     }
   });
-
 });
