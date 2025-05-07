@@ -1,0 +1,3 @@
+CONNECTION_STRING = postgresql://hostname:npg_UQVWPassowrdO1v7gltj@ep-empty-bread-a4qq8x8o-pooler.us-east-1.aws.neon.tech/Databaseename?sslmode=require
+
+PORT = 8000
