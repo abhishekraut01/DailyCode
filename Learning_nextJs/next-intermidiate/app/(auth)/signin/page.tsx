@@ -2,11 +2,11 @@
 import Link from "next/link";
 import React from "react";
 
-const Login = () => {
+const Signin = () => {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-r from-yellow-400 to-amber-500 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Login</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-800">Signin</h2>
         <form className="space-y-5">
           <div>
             <label className="block mb-1 text-sm font-semibold text-gray-600">
@@ -37,9 +37,9 @@ const Login = () => {
         </form>
         <p className="text-center text-sm text-gray-600">
           Don’t have an account?{" "}
-          <Link href="register">
+          <Link href="Signup">
           <span className="text-amber-600 font-semibold cursor-pointer">
-            Register
+            Sign in
           </span>
           </Link>
         </p>
@@ -48,4 +48,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signin;
