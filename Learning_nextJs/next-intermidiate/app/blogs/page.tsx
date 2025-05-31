@@ -1,33 +1,14 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
 
-interface Idata{
-    title:string,
-    body:string
-}
-
-const Blogs = () => {
-  const [isLoading, setIsloading] = useState(true);
-  const [data, setData] = useState();
-
-  useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/posts/1")
-      .then((response) => {
-        setData(response.data);
-        setIsloading(false);
-      });
-  });
-
-  if (isLoading) {
-    return <div>loading .........</div>;
-  }
+export default async function Blogs() {
+  const response = await axios.get(
+    "https://jsonplaceholder.typicode.com/posts/1"
+  );
+  const data = response.data;
   return (
     <div>
-        {data.title}
-        {data.body}
+      {data.title}
+      {data.body}
     </div>
-  )
-};
-
-export default Blogs;
+  );
+}
