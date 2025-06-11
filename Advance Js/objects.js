@@ -22,7 +22,7 @@ console.log(person2.lname)
 console.log(Person.lname)
 
 
-//The best way to create reusable objects are using function constructor
+//The best way to create reusable objects are using function constructor this is important for js interviews
 
 function CreateUser(username , password){
     this.username = username;
