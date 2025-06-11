@@ -40,3 +40,31 @@ console.log(simpleString.charAt(2))
 
 const name2 = new String("Abhishek2")
 // what this does it name2.__proto__ -> points to String class 
+
+
+//lets have one more example for clarity
+
+const p1 ={
+    ayushname:"ayush is inside p1",
+    age:20
+}
+
+const p2 ={
+    piyushname:"piyush is inside p2",
+    age:20,
+    __proto__ : p1
+}
+
+const p3 ={
+    jayushname:"jayush is inside p3",
+    age:20,
+    __proto__ : p2
+}
+
+console.log(p3.jayushname)
+console.log(p3.piyushname)
+console.log(p3.ayushname)
+
+//in this exaple we set the prototype chain see js engine firsly check hey ayushname are you inside p3 noo , again hey ayushname are you inside p2 noo and here we go again hey are you inside p1 yessssssssss
+
+//at last main __proto__ -> object refers to object and fukin yes that object's __proto__ points to null
