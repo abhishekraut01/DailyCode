@@ -26,3 +26,17 @@ console.log(Person.fname)
 
 Person2.__proto__.fname = "Kailash" // ✅
 console.log(Person.fname) 
+
+
+
+//------------------------------------------------------------------------
+// Lets talk about prototype inheritance and all 
+
+const simpleString = "Abhishek"
+console.log(simpleString.charAt(2))
+// tell me one thing name is simple string not a complex data structure so how can i use methods using name. and all methods come uppercase lowercase and all
+//see let me tell you one thing what js do under the hood is it wrap under wrapper class see exaple below
+
+
+const name2 = new String("Abhishek2")
+// what this does it name2.__proto__ -> points to String class 
