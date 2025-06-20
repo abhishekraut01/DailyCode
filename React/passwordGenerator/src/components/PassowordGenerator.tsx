@@ -8,6 +8,10 @@ const PasswordGenerator = () => {
   const [includeNumber, setIncludeNumber] = useState(false);
   const [length, setLength] = useState(12);
 
+  const copyToClickBoard =()=>{
+    
+  }
+
   useEffect(() => {
     const generatePassowrd = () => {
       let str = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
