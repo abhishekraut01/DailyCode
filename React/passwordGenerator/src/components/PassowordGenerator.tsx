@@ -1,4 +1,5 @@
 import { MovingBorderWrapper } from "../components/ui/MovingBorderWrapper";
+import { Button } from "./ui/moving-border";
 
 const PasswordGenerator = () => {
   return (
@@ -10,7 +11,7 @@ const PasswordGenerator = () => {
             className="w-full px-4 py-2 rounded-s-md"
             placeholder="Your password"
           />
-          <button className="bg-slate-400 px-3 py-2 rounded-e-md">Copy</button>
+          <Button className="rounded-e-md">Copy</Button>
         </div>
         <div className="flex gap-2 bg-transparent p-3">
           <label htmlFor="length-range" className="text-white">
