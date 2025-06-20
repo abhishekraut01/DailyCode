@@ -8,10 +8,14 @@ const PasswordGenerator = () => {
   const [includeNumber, setIncludeNumber] = useState(false);
   const [length, setLength] = useState(12);
 
-  const copyToClickBoard =()=>{
-    
-  }
-
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(password);
+      alert("Password copied!"); // Replace with toast if needed
+    } catch (err) {
+      alert("Failed to copy");
+    }
+  };
   useEffect(() => {
     const generatePassowrd = () => {
       let str = "QWERTYUIOPLKJHGFDSAZXCVBNMmnbvcxzasdfghjklpoiuytrewq";
@@ -37,13 +41,17 @@ const PasswordGenerator = () => {
         <div className="flex bg-transparent p-5 rounded-md ">
           <input
             type="text"
-            className="w-full px-4 py-2 rounded-s-md"
+            className="w-full px-4 py-2 rounded-md"
             placeholder="Your password"
             value={password}
           />
-          <Button onClick={()=>{
-            copyToClickBoard()
-          }}>Copy</Button>
+          <Button
+            onClick={() => {
+              copyToClipboard();
+            }}
+          >
+            Copy
+          </Button>
         </div>
         <div className="flex gap-2 bg-transparent p-3">
           <label htmlFor="length-range" className="text-white">
