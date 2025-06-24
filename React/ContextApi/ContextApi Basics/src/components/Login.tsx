@@ -1,16 +1,32 @@
-const login = () => {
-    function handleSubmit(){
+import type { FormEvent } from "react";
 
-    }
+const Login = () => {
+  function handleSubmit(e:FormEvent) {
+    e.preventDefault()
+  }
   return (
-    
-    <div className="">
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="Username" id="username" />
-        <input type="text" name="Username" id="username" />
+    <div className="h-screen w-full flex justify-center items-center bg-red-300">
+      <form onSubmit={(e)=>{
+        handleSubmit(e)
+      }}>
+        <div className="flex flex-col">
+          <input
+            type="text"
+            name="Username"
+            id="username"
+            placeholder="Username"
+          />
+          <input
+            type="text"
+            name="Username"
+            id="username"
+            placeholder="Password"
+          />
+          <button>Submit</button>
+        </div>
       </form>
     </div>
   );
 };
 
-export default login;
+export default Login;

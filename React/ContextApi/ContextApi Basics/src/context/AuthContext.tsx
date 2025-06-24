@@ -11,7 +11,7 @@ interface CreateContextT {
   setUser: () => void;
 }
 
-const authContext = createContext<CreateContextT | null>(null);
+export const authContext = createContext<CreateContextT | null>(null);
 
 export const AuthContextProvider = ({
   children,
@@ -43,10 +43,3 @@ export const AuthContextProvider = ({
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(authContext);
-  if (!context) {
-    throw new Error("useAppContext must be used inside AppProvider");
-  }
-  return context;
-};
