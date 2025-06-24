@@ -7,8 +7,8 @@ type UserT = {
 };
 
 interface CreateContextT {
-  user: UserT;
-  setUser: () => void;
+  user: UserT | null;
+  setUser: React.Dispatch<React.SetStateAction<UserT>>;
 }
 
 const authContext = createContext<CreateContextT | null>(null);
@@ -18,11 +18,7 @@ export const AuthContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [user, setUser] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+  const [user, setUser] = useState(null)
 
   function fakeApiCall() {
     const userres = {
@@ -33,11 +29,10 @@ export const AuthContextProvider = ({
     return userres;
   }
 
- useEffect(() => {
-    const Data = fakeApiCall();
-  setUser(Data);
- }, [])
- 
+  useEffect(() => {
+    const Data = null;
+    setUser(Data);
+  }, []);
 
   return (
     <authContext.Provider value={{ user, setUser }}>
