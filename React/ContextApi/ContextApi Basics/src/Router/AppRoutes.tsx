@@ -11,8 +11,8 @@ function AppRoutes() {
     <Routes>
         <Route index element={user ? <Home/> : <Login/>}></Route>
         <Route path="/profile" element={user ? <Profile/> : <Login/>}></Route>
-        <Route path="/login" element={<Login/>}></Route>
-        <Route path="/signup" element={<Signup/>}></Route>
+        <Route path="/login" element={user ? <Home/> : <Login/>}></Route>
+        <Route path="/signup" element={user ? <Home/> : <Signup/>}></Route>
     </Routes>
   )
 }

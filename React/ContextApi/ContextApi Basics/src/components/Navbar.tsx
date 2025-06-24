@@ -5,7 +5,7 @@ const Navbar = () => {
   return (
     <nav className="flex justify-center items-center bg-red-300 gap-3">
       <Link to={"profile"}>Profile</Link>
-      <Link to={"home"}>home</Link>
+      <Link to={"/"}>home</Link>
     </nav>
   );
 };

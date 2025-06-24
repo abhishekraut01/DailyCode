@@ -1,38 +1,31 @@
 import { useContext, createContext, useState, useEffect } from "react";
 
+// ✅ Define user type
 type UserT = {
   username: string;
-  email: string;
+  email?: string;
   password: string;
 };
 
+// ✅ Proper context type
 interface CreateContextT {
   user: UserT | null;
-  setUser: React.Dispatch<React.SetStateAction<UserT>>;
+  setUser: React.Dispatch<React.SetStateAction<UserT | null>>;
 }
 
+// ✅ Create context
 const authContext = createContext<CreateContextT | null>(null);
 
-export const AuthContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const [user, setUser] = useState(null)
+// ✅ Provider component
+export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<UserT | null>(null);
 
-  function fakeApiCall() {
-    const userres = {
-      username: "Abhishek",
-      email: "Abhishek@gmail.com",
-      password: "Abhishek123",
-    };
-    return userres;
-  }
-
-  useEffect(() => {
-    const Data = null;
-    setUser(Data);
-  }, []);
+  useEffect(()=>{
+    const userData = localStorage.getItem('user')
+    if(userData){
+      setUser(JSON.parse(userData))
+    }
+  },[setUser])
 
   return (
     <authContext.Provider value={{ user, setUser }}>
@@ -41,10 +34,11 @@ export const AuthContextProvider = ({
   );
 };
 
+// ✅ Custom hook to use auth context
 export const useAuth = () => {
   const context = useContext(authContext);
   if (!context) {
-    throw new Error("useAppContext must be used inside AppProvider");
+    throw new Error("useAuth must be used inside AuthContextProvider");
   }
   return context;
 };
