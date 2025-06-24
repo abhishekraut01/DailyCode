@@ -1,4 +1,4 @@
-import { useContext, createContext, useState } from "react";
+import { useContext, createContext, useState, useEffect } from "react";
 
 type UserT = {
   username: string;
@@ -11,7 +11,7 @@ interface CreateContextT {
   setUser: () => void;
 }
 
-export const authContext = createContext<CreateContextT | null>(null);
+const authContext = createContext<CreateContextT | null>(null);
 
 export const AuthContextProvider = ({
   children,
@@ -33,8 +33,11 @@ export const AuthContextProvider = ({
     return userres;
   }
 
-  const Data = fakeApiCall();
+ useEffect(() => {
+    const Data = fakeApiCall();
   setUser(Data);
+ }, [])
+ 
 
   return (
     <authContext.Provider value={{ user, setUser }}>
@@ -43,3 +46,10 @@ export const AuthContextProvider = ({
   );
 };
 
+export const useAuth = () => {
+  const context = useContext(authContext);
+  if (!context) {
+    throw new Error("useAppContext must be used inside AppProvider");
+  }
+  return context;
+};
