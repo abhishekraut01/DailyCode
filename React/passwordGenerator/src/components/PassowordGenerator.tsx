@@ -13,6 +13,7 @@ const PasswordGenerator = () => {
       await navigator.clipboard.writeText(password);
       alert("Password copied!"); // Replace with toast if needed
     } catch (err) {
+      console.log(err)
       alert("Failed to copy");
     }
   };
