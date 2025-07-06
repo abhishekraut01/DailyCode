@@ -5,9 +5,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const PORT = 9000;
+const express_rate_limit_1 = require("express-rate-limit");
 const app = (0, express_1.default)();
 // middleware to parse incoming JSON body
 app.use(express_1.default.json());
+const limiter = (0, express_rate_limit_1.rateLimit)({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+    message: "tere ma ki chut bass kar ab"
+});
 // mock user data (ideally should come from DB)
 const User = [
     {
@@ -43,7 +51,7 @@ const User = [
 ];
 // temporary store for mapping email to OTP
 const MapUserWithOtp = new Map();
-app.post("/login", (req, res) => {
+app.post("/login", limiter, (req, res) => {
     // take email and password from user
     const { email, password } = req.body;
     if (!email || !password) {
@@ -76,7 +84,7 @@ app.post("/login", (req, res) => {
         },
     });
 });
-app.post("/generate-otp", (req, res) => {
+app.post("/generate-otp", limiter, (req, res) => {
     // get the email from the body
     const { email } = req.body;
     if (!email) {
@@ -111,7 +119,7 @@ app.post("/generate-otp", (req, res) => {
         email,
     });
 });
-app.post("/reset-password", (req, res) => {
+app.post("/reset-password", limiter, (req, res) => {
     // Take email, otp and new password from user to reset password
     const { email, otp, newPassword } = req.body;
     if (!otp || !email || !newPassword) {
