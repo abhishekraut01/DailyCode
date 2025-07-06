@@ -82,6 +82,51 @@ app.post("/login", (req: Request, res: Response) => {
 });
 
 
+app.post("/generate-otp", (req: Request, res: Response) => {
+  // get the email from the body
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "Email is required in order to reset password",
+    });
+  }
+
+  // verify the user is present in database or not
+  const userExist = User.find((user) => user.email === email);
+
+  if (!userExist) {
+    return res.status(400).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  // if user present generate random 6 digit otp
+  const OTP = Math.floor(100000 + Math.random() * 900000); // ensures 6-digit OTP
+
+  if (!OTP) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP can not be generated",
+    });
+  }
+
+  // save the otp along with email id in map
+  MapUserWithOtp.set(email, OTP.toString());
+
+  console.log(`✅ OTP generated for ${email} : ${OTP}`);
+
+  // send the otp to user
+  res.status(200).json({
+    success: true,
+    message: "OTP generated and printed on console",
+    email,
+  });
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`🚀 server is listening at port ${PORT}`);
