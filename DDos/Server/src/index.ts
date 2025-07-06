@@ -126,7 +126,55 @@ app.post("/generate-otp", (req: Request, res: Response) => {
   });
 });
 
+app.post("/reset-password", (req: Request, res: Response) => {
+  // Take email, otp and new password from user to reset password
+  const { email, otp, newPassword } = req.body;
 
+  if (!otp || !email || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Email, OTP, and new password are required",
+    });
+  }
+
+  // Check if user exists
+  const user = User.find((u) => u.email === email);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  // Check if OTP matches
+  const savedOtp = MapUserWithOtp.get(email);
+  if (!savedOtp) {
+    return res.status(400).json({
+      success: false,
+      message: "No OTP found for this email. Please generate OTP again.",
+    });
+  }
+
+  if (savedOtp !== otp) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid OTP",
+    });
+  }
+
+  // Update the user's password
+  user.password = newPassword;
+
+  // Delete OTP after use
+  MapUserWithOtp.delete(email);
+
+  console.log(`✅ Password updated for ${email}`);
+
+  return res.status(200).json({
+    success: true,
+    message: "Password has been reset successfully",
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 server is listening at port ${PORT}`);
