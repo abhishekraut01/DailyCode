@@ -1,38 +1,37 @@
 import crypto from "node:crypto";
+// 🔐 Create SHA-256 hash of a number
 async function createHashValue(num) {
     return crypto.createHash("sha256").update(num.toString()).digest("hex");
 }
-// we have to find the number by which hex string from is starting with 00000
-function checkStartWithfiveZeroOrNot(expression) {
-    for (let i = 0; i < 5; i++) {
-        if (expression.charAt(i) === "0") {
-            continue;
-        }
-        else {
-            return false;
-        }
-    }
-    return true;
+// ✅ Check if hash starts with N zeros
+function checkStartWithNZero(expression, count) {
+    return expression.startsWith("0".repeat(count));
 }
-async function findExpressionAndValue() {
+// 🔍 Find the first number whose hash starts with N zeros
+async function findExpressionAndValue(zeroCount) {
     for (let index = 0; index < 99999999; index++) {
-        const hasedExpression = await createHashValue(index);
-        const isStartWithZeroRes = checkStartWithfiveZeroOrNot(hasedExpression);
-        if (isStartWithZeroRes) {
-            return {
-                hasedExpression,
-                index,
-            };
+        const hashedExpression = await createHashValue(index);
+        if (checkStartWithNZero(hashedExpression, zeroCount)) {
+            return { index, hashedExpression };
+        }
+        // Optional: log progress every 1M
+        if (index % 1000000 === 0) {
+            console.log(`🔄 Checked till: ${index}`);
         }
     }
+    throw new Error("😵 No matching value found within range.");
 }
-function main() {
-    const res = findExpressionAndValue();
-    res.then((result) => {
-        console.log(`The value form which the string start with 5 zeros is ${result?.index} : ${result?.hasedExpression}`);
-    })
-        .catch((err) => {
-        console.log("logic galat ho gaya ji", err);
-    });
+// 🧠 Entry point
+async function main() {
+    const zeroCount = 5; // 🔧 Change number of zeros to check
+    console.time("⏱️ Time Taken");
+    try {
+        const result = await findExpressionAndValue(zeroCount);
+        console.log(`✅ Found! Number: ${result.index} → Hash: ${result.hashedExpression}`);
+    }
+    catch (err) {
+        console.error("❌ Error:", err);
+    }
+    console.timeEnd("⏱️ Time Taken");
 }
 main();
