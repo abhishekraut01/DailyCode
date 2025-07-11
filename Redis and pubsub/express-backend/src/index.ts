@@ -1,5 +1,5 @@
 import express from "express";
-import { createClient } from "redis";
+import  { createClient } from "redis";
 
 const PORT = 4000;
 const app = express();
@@ -35,10 +35,13 @@ app.post("/submit", async (req, res) => {
   }
 });
 
-client.connect().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Express server running on http://localhost:${PORT}`);
+client
+  .connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Express server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Redis connection failed:", err);
   });
-}).catch((err) => {
-  console.error("❌ Redis connection failed:", err);
-});
