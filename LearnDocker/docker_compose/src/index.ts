@@ -14,6 +14,7 @@ app.post("/user", async (req: Request, res: Response) => {
       data: {
         name: `Abhishek user no ${Math.floor(Math.random() * 1000)}`,
         email: `${Math.floor(Math.random() * 1000)}@prisma.io`,
+        password:`passowrd${Math.floor(Math.random() * 1000)}`
       },
     });
     res.status(201).send({ message: "User created", user: newUser });
