@@ -36,3 +36,17 @@ npm run build
 npm run dev
 ```
 
+# 🚀 Docker setup
+
+### 1. Install Docker 
+Download and install from [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+
+### 2. Create network
+```bash
+docker network create mylocalnetwork
+```
+
+### 3. docker build image 
+```bash
+docker build -t prismaProject
+```
