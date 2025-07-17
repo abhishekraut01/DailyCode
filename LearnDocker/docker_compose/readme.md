@@ -45,8 +45,22 @@ Download and install from [https://www.docker.com/products/docker-desktop/](http
 ```bash
 docker network create mylocalnetwork
 ```
-
-### 3. docker build image 
+### 3. update .env
 ```bash
-docker build -t prismaProject
+DATABASE_URL="postgresql://postgres:admin123@localhost:5432/postgres"
+```
+
+### 4. Run the database
+```bash
+docker run -e POSTGRES_PASSWORD=admin123 --name mypg --network mylocalnetwork -d -p 5432:5432 postgres
+```
+
+### 5. docker build image 
+```bash
+docker build --network=host -t prismaproject .
+```
+
+### 6. docker run image 
+```bash
+docker run -e DATABASE_URL="postgresql://postgres:admin123@mypg:5432/stduentdatabase" --name prismaApp --network mylocalnetwork -p 3000:3000  prismaproject
 ```
