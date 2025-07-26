@@ -2,7 +2,7 @@ import os from "os";
 import cluster from "cluster";
 
 const numCPUs = os.cpus().length;
-const number = 10000000000; // Reduced for testing
+const number = 10000000000; 
 
 if (cluster.isPrimary) {
     console.log(`Primary process ${process.pid} is running`);
