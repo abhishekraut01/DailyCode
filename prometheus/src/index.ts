@@ -5,11 +5,9 @@ import client from "prom-client";
 const app = express()
 app.use(reqCountMiddleware)
 
-app.get("/cpu", (req, res) => {
-    let sum = 0
-    for (let i = 0; i < 10000000; i++) {
-        sum += i
-    }
+app.get("/cpu", async (req, res) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     res.status(200).json({
         message: "success",
     })
