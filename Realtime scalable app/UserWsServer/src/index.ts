@@ -1,16 +1,12 @@
-import { WebSocketServer, WebSocket } from 'ws'
+import { WebSocketServer, WebSocket } from 'ws';
 
-const wss = new WebSocketServer({
-    port: 9000
-})
+export const wss = new WebSocketServer({ port: 9000 });
 
 interface Room {
-    sockets: WebSocket[]
+    sockets: WebSocket[];
 }
 
-const rooms: Record<string, Room> = {
-
-}
+export const rooms: Record<string, Room> = {};
 
 wss.on("connection", (socket: WebSocket) => {
     socket.on("error", () => {
@@ -23,7 +19,7 @@ wss.on("connection", (socket: WebSocket) => {
 
             if (!parseData || typeof parseData !== "object") {
                 console.log("Connection rejected: data is invalid");
-                socket.close(1008, "data is invalid");
+                socket.send(JSON.stringify({ error: "Invalid message format" }));
                 return;
             }
 
