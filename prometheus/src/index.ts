@@ -1,8 +1,8 @@
 import express from 'express'
 import { reqCountMiddleware } from './middleware.js'
+import client from "prom-client";
+
 const app = express()
-
-
 
 app.get("/cpu", (req, res) => {
     let sum = 0
@@ -23,10 +23,16 @@ app.get("/user", (req, res) => {
             role: "SDE2"
         }
     })
-    
+})
+
+app.get("/matrix", async (req, res) => {
+    const metrics = await client.register.metrics();
+    res.set('Content-Type', client.register.contentType);
+    res.end(metrics);
 })
 
 app.use(reqCountMiddleware)
+
 app.listen(3000, () => {
     console.log(`server is listening at port 3000`)
 })
