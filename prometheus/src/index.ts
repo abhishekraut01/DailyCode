@@ -1,17 +1,16 @@
 import express from 'express'
+import { logMiddleware } from './middleware.js'
 const app = express()
 
 
-app.get("/cpu", (req, res) => {
-    let startTime = Date.now()
+
+app.get("/cpu", logMiddleware , (req, res) => {
     let sum = 0
-    for (let i = 0; i < 1000000000; i++) {
+    for (let i = 0; i < 10000000; i++) {
         sum += i
     }
-    let endTime = Date.now()
     res.status(200).json({
         message: "success",
-        data: `The time took to response is ${endTime - startTime}ms on route ${req.route}`
     })
 })
 
