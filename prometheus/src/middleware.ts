@@ -32,15 +32,22 @@ export function reqCountMiddleware(req: Request, res: Response, next: NextFuncti
 
     res.on('finish', () => {
         let endTime = Date.now()
-        console.log(`req took ${endTime - startTime}ms`)
+        const duration = endTime - startTime;
 
         reqCount.inc({
             method: req.method,
             route: req.route ? req.route.path : req.path,
             status_code: res.statusCode
         })
+
+        httpRequestDurationMicroseconds.observe({
+            method: req.method,
+            route: req.route ? req.route.path : req.path,
+            code: res.statusCode
+        }, duration);
+
+        activeRequestsGauge.inc();
     })
 
-    activeRequestsGauge.inc();
     next()
 }
