@@ -1,8 +1,13 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import express from 'express'
+import {Client} from 'pg'
 
 const app = express()
-
-
+const pgClient = new Client({
+    
+})
 
 
 
