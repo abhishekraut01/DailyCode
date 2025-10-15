@@ -13,39 +13,67 @@ const pgClient = new Client({
     port: process.env.DB_PORT as unknown as number ?? 5432,
     password: process.env.PASSWORD,
     database: process.env.DATABASE
-})
+});
 
 
-await pgClient.connect()
+// Establish the connection once
+(async () => {
+    try {
+        await pgClient.connect()
+        console.log("PostgreSQL client connected successfully.")
+    } catch (err) {
+        console.error("Failed to connect to PostgreSQL:", err)
+        // Exit or handle error appropriately
+        process.exit(1)
+    }
+})()
+
+
 
 app.post('/login', async (req, res) => {
     const { username, email, password } = req.body
 
-    if (!username || !email || !password) { // Fixed the validation logic to check if ANY are missing
-        return res.status(400).json({
+    // 1. Improved Validation Check (use OR operator)
+    if (!username || !email || !password) {
+        return res.status(400).json({ // 400 Bad Request is better than 411
             success: false,
-            message: "username, email, and password required",
+            message: "username, email, and password are required.",
         })
     }
 
     try {
-        // ⚠️ THIS IS THE INSECURE FIX: Adding single quotes around variables
-        const newUser = await pgClient.query(`INSERT INTO EMPLOYEE (username , email , password) VALUES('${username}' , '${email}' , '${password}');`)
+        // 2. Hash the Password (Crucial Security Step)
+        // const hashedPassword = await bcrypt.hash(password, 10);
 
-        res.status(200).json({
+        // 3. SECURE PARAMETERIZED QUERY (No SQL Injection)
+        const queryText = 'INSERT INTO EMPLOYEE (username, email, password) VALUES($1, $2, $3) RETURNING id, username, email';
+        // Note: For actual use, you'd insert the hashedPassword instead of the raw password
+        const queryValues = [username, email, password]; 
+
+        const result = await pgClient.query(queryText, queryValues);
+        const newUser = result.rows[0];
+        
+        // 4. Send response
+        res.status(201).json({ // 201 Created is often better for a successful POST
             success: true,
             message: "user created successfully",
             data: {
-                user: newUser
+                // Return non-sensitive data
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email
             }
         })
     } catch (error) {
-        res.status(200).json({
+        console.error("Database error during user creation:", error);
+        // Handle common errors like duplicate username/email gracefully here
+        res.status(500).json({
             success: false,
-            message: error instanceof Error ? error.message : String(error),
+            message: "Failed to create user due to a server error.",
         })
     }
 })
+
 
 app.get('/getUsers', async (req, res) => {
 
@@ -63,3 +91,5 @@ app.get('/getUsers', async (req, res) => {
 app.listen(process.env.PORT, () => {
     console.log(`server is walking on port ${process.env.PORT}`)
 })
+
+
