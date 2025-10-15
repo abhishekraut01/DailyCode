@@ -8,11 +8,11 @@ const app = express()
 app.use(express.json())
 
 const pgClient = new Client({
-    user: "postgres",
-    host: "localhost",
-    port: 5432,
-    password: "sweabhishek",
-    database: "postgres"
+    user: process.env.USER,
+    host: process.env.HOST,
+    port: process.env.DATABSEPORT as unknown as number ?? 5432,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 })
 
 
