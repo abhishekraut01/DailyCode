@@ -10,7 +10,7 @@ app.use(express.json())
 const pgClient = new Client({
     user: process.env.USER,
     host: process.env.HOST,
-    port: process.env.DATABSEPORT as unknown as number ?? 5432,
+    port: process.env.DB_PORT as unknown as number ?? 5432,
     password: process.env.PASSWORD,
     database: process.env.DATABASE
 })
@@ -28,14 +28,34 @@ app.post('/login', async (req, res) => {
         })
     }
 
-    // ⚠️ THIS IS THE INSECURE FIX: Adding single quotes around variables
-    const newUser = await pgClient.query(`INSERT INTO EMPLOYEE (username , email , password) VALUES('${username}' , '${email}' , '${password}');`)
-    
+    try {
+        // ⚠️ THIS IS THE INSECURE FIX: Adding single quotes around variables
+        const newUser = await pgClient.query(`INSERT INTO EMPLOYEE (username , email , password) VALUES('${username}' , '${email}' , '${password}');`)
+
+        res.status(200).json({
+            success: true,
+            message: "user created successfully",
+            data: {
+                user: newUser
+            }
+        })
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            message: error instanceof Error ? error.message : String(error),
+        })
+    }
+})
+
+app.get('/getUsers', async (req, res) => {
+
+    const response = await pgClient.query(`SELECT * FROM EMPLOYEE;`)
+    let userData = response.rows
     res.status(200).json({
         success: true,
         message: "user created successfully",
         data: {
-            user:newUser
+            user: userData
         }
     })
 })
