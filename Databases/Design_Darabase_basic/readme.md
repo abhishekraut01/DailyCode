@@ -7,8 +7,6 @@
 ## many to many relation 
 - user should able to follow other users 
 
-## contact details
-- user will have contact details 
 
 ## notification
 - user will have notification
