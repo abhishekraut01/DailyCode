@@ -52,3 +52,18 @@ model Tweet {
   updatedAt             DateTime      @default(now())
 }
 
+model Like {
+  id                     String       @id @default(uuid())
+  tweetId                String?
+  commentId              String?
+  likeType               LikeType
+  userId                 String
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @default(now())
+}
+
+enum LikeType {
+  tweetId
+  commentId
+}
+
