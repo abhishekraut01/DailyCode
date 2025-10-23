@@ -12,10 +12,41 @@ model Users {
   id         String   @id @default(uuid())
   username   String   @unique
   password   String
-  bio        String?
+  profile    Profile?
   isVarified Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
+}
+
+model Profile {
+  id              String          @id @default(uuid())
+  bio             String?
+  profileCategory ProfileCategory
+  userId          String          @unique
+  user            Users           @relation(fields: [userId], references: [id])
+}
+
+enum ProfileCategory {
+  Event
+  Club
+  Automotive
+  Aviation
+  Marine
+  Beauty
+  Commercial
+  Education
+  Financial
+  Restaurant
+  Professional
+  Advertising
+  Science
+  Sports
+  Travel
+  Influencer
+  Musician
+  Journalist
+  Entrepreneur
+  Community
 }
 
 model Notifications {
@@ -76,9 +107,9 @@ model Retweet {
 }
 
 model Comments {
-  id             String   @id @default(uuid())
-  tweetId        String
-  userId         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
+  id        String   @id @default(uuid())
+  tweetId   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
