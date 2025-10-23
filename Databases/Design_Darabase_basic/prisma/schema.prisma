@@ -17,8 +17,10 @@ model Users {
   receivedMessages Messages[]      @relation("ReceivedMessages")
   notifications    Notifications[]
   comments         Comments[]
-  tweet            Tweet[]
+  tweet            Tweets[]
   like             Like[]
+  orignalOwner     Retweets[]      @relation("orignalOwners")
+  retweetUser      Retweets[]      @relation("retweetUsers")
   isVarified       Boolean         @default(false)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @default(now())
@@ -73,12 +75,13 @@ model Messages {
   updatedAt  DateTime @default(now())
 }
 
-model Tweet {
+model Tweets {
   id        String     @id @default(uuid())
   content   String
   userId    String
   isSeen    Boolean    @default(false)
   comments  Comments[]
+  retweets  Retweets[]
   likes     Like[] // one-to-many: user -> likes
   user      Users      @relation(fields: [userId], references: [id])
   createdAt DateTime   @default(now())
@@ -90,7 +93,7 @@ model Comments {
   tweetId   String
   userId    String
   like      Like[]
-  tweet     Tweet    @relation(fields: [tweetId], references: [id])
+  tweet     Tweets   @relation(fields: [tweetId], references: [id])
   user      Users    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -103,7 +106,7 @@ model Like {
   likeType  LikeType
   userId    String
   user      Users     @relation(fields: [userId], references: [id])
-  tweet     Tweet?    @relation(fields: [tweetId], references: [id])
+  tweet     Tweets?   @relation(fields: [tweetId], references: [id])
   comment   Comments? @relation(fields: [commentId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
@@ -114,11 +117,14 @@ enum LikeType {
   commentId
 }
 
-model Retweet {
+model Retweets {
   id             String   @id @default(uuid())
   tweetId        String
   orignalOwnerId String
   retweetUserId  String
+  orignalOwner   Users    @relation("orignalOwners", fields: [orignalOwnerId], references: [id])
+  retweetUser    Users    @relation("retweetUsers", fields: [orignalOwnerId], references: [id])
+  tweet          Tweets   @relation(fields: [tweetId], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now())
 }
