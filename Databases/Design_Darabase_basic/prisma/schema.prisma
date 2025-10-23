@@ -67,3 +67,11 @@ enum LikeType {
   commentId
 }
 
+model Retweet{
+  id                       String       @id @default(uuid())
+  tweetId                  String
+  orignalOwnerId           String
+  retweetUserId            String
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @default(now())
+}
