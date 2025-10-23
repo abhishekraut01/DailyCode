@@ -8,58 +8,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users{
-  id                     String       @id @default(uuid())
-  username               String       @unique
-  password               String
-  bio                    String?     
-  isVarified            Boolean       @default(false)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @default(now())
+model Users {
+  id         String   @id @default(uuid())
+  username   String   @unique
+  password   String
+  bio        String?
+  isVarified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
 
-model Notifications{
-  id                     String       @id @default(uuid())
-  userId                 String
-  content                String       @unique
-  type                  NotificationsType
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @default(now())
+model Notifications {
+  id        String            @id @default(uuid())
+  userId    String
+  content   String            @unique
+  type      NotificationsType
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now())
 }
 
 enum NotificationsType {
-  user 
-  system 
+  user
+  system
 }
 
-model Messages{
-  id                     String       @id @default(uuid())
-  sender                 String         
-  reciever               String 
-  content                String
-  isSeen                 Boolean      @default(false)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @default(now())
+model Messages {
+  id        String   @id @default(uuid())
+  sender    String
+  reciever  String
+  content   String
+  isSeen    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
-
 
 model Tweet {
-  id                     String       @id @default(uuid())
-  content                String
-  userId                 String
-  isSeen                 Boolean      @default(false)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @default(now())
+  id        String   @id @default(uuid())
+  content   String
+  userId    String
+  isSeen    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Like {
-  id                     String       @id @default(uuid())
-  tweetId                String?
-  commentId              String?
-  likeType               LikeType
-  userId                 String
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @default(now())
+  id        String   @id @default(uuid())
+  tweetId   String?
+  commentId String?
+  likeType  LikeType
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 enum LikeType {
@@ -67,11 +66,19 @@ enum LikeType {
   commentId
 }
 
-model Retweet{
-  id                       String       @id @default(uuid())
-  tweetId                  String
-  orignalOwnerId           String
-  retweetUserId            String
-  createdAt                DateTime      @default(now())
-  updatedAt                DateTime      @default(now())
+model Retweet {
+  id             String   @id @default(uuid())
+  tweetId        String
+  orignalOwnerId String
+  retweetUserId  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+}
+
+model Comments {
+  id             String   @id @default(uuid())
+  tweetId        String
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 }
