@@ -123,7 +123,7 @@ model Retweets {
   orignalOwnerId String
   retweetUserId  String
   orignalOwner   Users    @relation("orignalOwners", fields: [orignalOwnerId], references: [id])
-  retweetUser    Users    @relation("retweetUsers", fields: [orignalOwnerId], references: [id])
+  retweetUser    Users    @relation("retweetUsers", fields: [retweetUserId], references: [id])
   tweet          Tweets   @relation(fields: [tweetId], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now())
