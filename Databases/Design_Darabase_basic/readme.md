@@ -2,9 +2,15 @@
 
 ### User Entity
 - user should able to sign up in platform 
-- user will have contact details 
-- user will have subscription 
+- user will have subscription -> isVarified
+
+## many to many relation 
 - user should able to follow other users 
+
+## contact details
+- user will have contact details 
+
+## notification
 - user will have notification
 
 ### Messages Entity
@@ -12,7 +18,13 @@
 
 ## Tweet Entity
 - user should able to post tweet with media in it
+
+## Like Entity
 - user should able to like the post 
+
+## Retweet
 - user should able to retweet that post
+
+## Comments Entity
 - user should able to comment the post
 - Comments can also have media 
