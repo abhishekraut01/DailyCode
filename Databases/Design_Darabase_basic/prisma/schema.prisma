@@ -30,3 +30,11 @@ enum NotificationsType {
   user 
   system 
 }
+
+model Messages{
+  id                     String       @id @default(uuid())
+  sender                 String         
+  reciever               String 
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @default(now())
+}
