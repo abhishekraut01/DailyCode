@@ -9,16 +9,19 @@ datasource db {
 }
 
 model Users {
-  id               String     @id @default(uuid())
-  username         String     @unique
+  id               String          @id @default(uuid())
+  username         String          @unique
   password         String
   profile          Profile?
-  sentMessages     Messages[] @relation("SentMessages")
-  receivedMessages Messages[] @relation("ReceivedMessages")
-  notifications Notifications[]
-  isVarified    Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @default(now())
+  sentMessages     Messages[]      @relation("SentMessages")
+  receivedMessages Messages[]      @relation("ReceivedMessages")
+  notifications    Notifications[]
+  comments         Comments[]
+  tweet            Tweet[]
+  like             Like[]
+  isVarified       Boolean         @default(false)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @default(now())
 }
 
 model Profile {
@@ -71,22 +74,39 @@ model Messages {
 }
 
 model Tweet {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   content   String
   userId    String
-  isSeen    Boolean  @default(false)
+  isSeen    Boolean    @default(false)
+  comments  Comments[]
+  likes     Like[] // one-to-many: user -> likes
+  user      Users      @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
+}
+
+model Comments {
+  id        String   @id @default(uuid())
+  tweetId   String
+  userId    String
+  like      Like[]
+  tweet     Tweet    @relation(fields: [tweetId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Like {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   tweetId   String?
   commentId String?
   likeType  LikeType
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  user      Users     @relation(fields: [userId], references: [id])
+  tweet     Tweet?    @relation(fields: [tweetId], references: [id])
+  comment   Comments? @relation(fields: [commentId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 }
 
 enum LikeType {
@@ -101,12 +121,4 @@ model Retweet {
   retweetUserId  String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now())
-}
-
-model Comments {
-  id        String   @id @default(uuid())
-  tweetId   String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
 }
