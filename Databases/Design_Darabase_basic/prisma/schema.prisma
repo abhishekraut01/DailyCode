@@ -13,6 +13,7 @@ model Users {
   username   String   @unique
   password   String
   profile    Profile?
+  notifications     Notifications[]
   isVarified Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
@@ -23,37 +24,29 @@ model Profile {
   bio             String?
   profileCategory ProfileCategory
   userId          String          @unique
-  user            Users           @relation(fields: [userId], references: [id])
+  user            Users           @relation(fields: [userId], references: [id] , onDelete: Cascade)
 }
 
 enum ProfileCategory {
-  Event
-  Club
-  Automotive
-  Aviation
-  Marine
-  Beauty
-  Commercial
   Education
   Financial
-  Restaurant
   Professional
   Advertising
   Science
-  Sports
+  Sport
   Travel
   Influencer
-  Musician
-  Journalist
   Entrepreneur
   Community
+  Other
 }
 
 model Notifications {
   id        String            @id @default(uuid())
-  userId    String
-  content   String            @unique
+  userId    String            
+  content   String            
   type      NotificationsType
+  user      Users             @relation(fields: [userId] , references: [id] , onDelete: Cascade)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now())
 }
