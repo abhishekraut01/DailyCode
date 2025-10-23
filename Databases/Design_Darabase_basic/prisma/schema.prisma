@@ -20,6 +20,7 @@ model Users{
 
 model Notifications{
   id                     String       @id @default(uuid())
+  userId                 String
   content                String       @unique
   type                  NotificationsType
   createdAt             DateTime      @default(now())
@@ -35,6 +36,8 @@ model Messages{
   id                     String       @id @default(uuid())
   sender                 String         
   reciever               String 
+  content                String
+  isSeen                 Boolean      @default(false)
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @default(now())
 }
