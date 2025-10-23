@@ -9,14 +9,16 @@ datasource db {
 }
 
 model Users {
-  id         String   @id @default(uuid())
-  username   String   @unique
-  password   String
-  profile    Profile?
-  notifications     Notifications[]
-  isVarified Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
+  id               String     @id @default(uuid())
+  username         String     @unique
+  password         String
+  profile          Profile?
+  sentMessages     Messages[] @relation("SentMessages")
+  receivedMessages Messages[] @relation("ReceivedMessages")
+  notifications Notifications[]
+  isVarified    Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
 }
 
 model Profile {
@@ -24,7 +26,7 @@ model Profile {
   bio             String?
   profileCategory ProfileCategory
   userId          String          @unique
-  user            Users           @relation(fields: [userId], references: [id] , onDelete: Cascade)
+  user            Users           @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum ProfileCategory {
@@ -43,10 +45,10 @@ enum ProfileCategory {
 
 model Notifications {
   id        String            @id @default(uuid())
-  userId    String            
-  content   String            
+  userId    String
+  content   String
   type      NotificationsType
-  user      Users             @relation(fields: [userId] , references: [id] , onDelete: Cascade)
+  user      Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now())
 }
@@ -57,13 +59,15 @@ enum NotificationsType {
 }
 
 model Messages {
-  id        String   @id @default(uuid())
-  sender    String
-  reciever  String
-  content   String
-  isSeen    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  senderId   String
+  recieverId String
+  sender     Users    @relation("SentMessages", fields: [senderId], references: [id])
+  reciever   Users    @relation("ReceivedMessages", fields: [recieverId], references: [id])
+  content    String
+  isSeen     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
 
 model Tweet {
