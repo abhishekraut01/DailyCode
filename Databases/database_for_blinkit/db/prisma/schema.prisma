@@ -13,6 +13,7 @@ model User {
   phoneNumber               String
   email                     String?   @unique
   addresses                 Address[]
+  orders                    Orders[]
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 }
@@ -37,7 +38,7 @@ model Address {
   // 👤 Relationship
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  orders  Orders[]
   // 🕓 Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,9 +58,20 @@ model Product {
   id                        String   @id @default(uuid())
   productTitle              String
   description               String
+  price                     Int
+  category                  ProductCategory
   media                     Media[]
+  orders                    Orders[]
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
+}
+
+enum ProductCategory {
+  Dairy
+  Bread
+  Eggs
+  Snacks
+  Munchies
 }
 
 model Media {
@@ -79,7 +91,13 @@ enum MediaType {
 
 
 model Orders {
-  id                        String    @id @default(uuid())
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
+  id                        String        @id @default(uuid())
+  productId                 String    
+  userId                    String    
+  adressId                  String    
+  address                   Address       @relation(fields: [adressId], references: [id])
+  product                   Product       @relation(fields: [productId], references: [id])
+  user                      User          @relation(fields: [userId], references: [id])
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
 }
