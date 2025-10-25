@@ -8,37 +8,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//
-// ─── USER MODEL ───────────────────────────────────────────────────────────────
-//
-
+// ============================
+// Users Table
+// ============================
 model User {
-  id               String          @id @default(uuid())
-  username         String          @unique
-  password         String
-  profile          Profile?
-  tweets           Tweet[]
-  comments         Comment[]
-  likes            Like[]
-  retweets         Retweet[]
-  notifications    Notification[]
-  sentMessages     Message[]       @relation("SentMessages")
-  receivedMessages Message[]       @relation("ReceivedMessages")
-  isVerified       Boolean         @default(false)
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id                String         @id @default(uuid())
+  username          String         @unique
+  email             String         @unique
+  password          String
+  isVerified        Boolean        @default(false)
+  profile           Profile?       @relation("UserProfile")
+  tweets            Tweet[]
+  notifications     Notification[]
+  messagesSent      Message[]      @relation("SentMessages")
+  messagesReceived  Message[]      @relation("ReceivedMessages")
+  likes             Like[]
+  comment           Comment[]
+  retweetsMade      Retweet[]      @relation("UserRetweets")
+  retweetsOwned     Retweet[]      @relation("OriginalTweetOwner")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
 }
 
-//
-// ─── PROFILE MODEL ─────────────────────────────────────────────────────────────
-//
-
+// ============================
+// Profile Table (One-to-One with User)
+// ============================
 model Profile {
   id              String          @id @default(uuid())
   bio             String?
   profileCategory ProfileCategory
   userId          String          @unique
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User            @relation("UserProfile", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
 
 enum ProfileCategory {
@@ -55,18 +58,17 @@ enum ProfileCategory {
   Other
 }
 
-//
-// ─── NOTIFICATIONS MODEL ───────────────────────────────────────────────────────
-//
-
+// ============================
+// Notification Table (One-to-Many with User)
+// ============================
 model Notification {
-  id        String            @id @default(uuid())
+  id        String             @id @default(uuid())
   userId    String
   content   String
   type      NotificationType
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 }
 
 enum NotificationType {
@@ -74,79 +76,89 @@ enum NotificationType {
   SYSTEM
 }
 
-//
-// ─── MESSAGES MODEL ────────────────────────────────────────────────────────────
-//
-
+// ============================
+// Messages Table (One-to-Many for Sender/Receiver)
+// ============================
 model Message {
   id         String   @id @default(uuid())
   senderId   String
   receiverId String
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   content    String
   isSeen     Boolean  @default(false)
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
 }
 
-//
-// ─── TWEETS MODEL ──────────────────────────────────────────────────────────────
-//
-
+// ============================
+// Tweet Table (One-to-Many with User)
+// ============================
 model Tweet {
-  id          String       @id @default(uuid())
-  content     String
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comments    Comment[]
-  likes       Like[]
-  retweets    Retweet[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id        String     @id @default(uuid())
+  content   String
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  likes     Like[]
+  media     Media[]
+  retweets  Retweet[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  @@index([userId])
-  @@index([createdAt])
 }
 
-//
-// ─── COMMENTS MODEL ────────────────────────────────────────────────────────────
-//
+// ============================
+// Media Table (One-to-Many with Tweet)
+// ============================
+model Media {
+  id        String     @id @default(uuid())
+  tweetId   String
+  url       String
+  type      MediaType
+  tweet     Tweet      @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  GIF
+}
+
+// ============================
+// Comment Table (One-to-Many with Tweet & User)
+// ============================
 model Comment {
-  id          String    @id @default(uuid())
-  content     String
-  tweetId     String
-  userId      String
-  tweet       Tweet     @relation(fields: [tweetId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  likes       Like[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String     @id @default(uuid())
+  tweetId   String
+  userId    String
+  tweet     Tweet      @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id])
+  likes     Like[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  @@index([tweetId])
-  @@index([userId])
 }
 
-//
-// ─── LIKES MODEL ───────────────────────────────────────────────────────────────
-//
-
+// ============================
+// Like Table (Polymorphic: Tweet or Comment)
+// ============================
 model Like {
-  id          String     @id @default(uuid())
-  userId      String
-  tweetId     String?
-  commentId   String?
-  likeType    LikeType
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tweet       Tweet?     @relation(fields: [tweetId], references: [id], onDelete: Cascade)
-  comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id        String     @id @default(uuid())
+  tweetId   String?
+  commentId String?
+  likeType  LikeType
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweet     Tweet?     @relation(fields: [tweetId], references: [id])
+  comment   Comment?   @relation(fields: [commentId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  @@index([userId])
-  @@index([tweetId])
-  @@index([commentId])
 }
 
 enum LikeType {
@@ -154,19 +166,18 @@ enum LikeType {
   COMMENT
 }
 
-//
-// ─── RETWEETS MODEL ────────────────────────────────────────────────────────────
-//
-
+// ============================
+// Retweet Table (Many-to-Many: User ↔ Tweet)
+// ============================
 model Retweet {
-  id             String   @id @default(uuid())
-  tweetId        String
-  retweetUserId  String
-  tweet          Tweet    @relation(fields: [tweetId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [retweetUserId], references: [id], onDelete: Cascade)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(uuid())
+  tweetId         String
+  retweetUserId   String
+  originalOwnerId String
+  tweet           Tweet    @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  retweetUser     User     @relation("UserRetweets", fields: [retweetUserId], references: [id], onDelete: Cascade)
+  originalOwner   User     @relation("OriginalTweetOwner", fields: [originalOwnerId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  @@index([tweetId])
-  @@index([retweetUserId])
-}
+} 
