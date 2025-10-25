@@ -12,7 +12,43 @@ model User {
   name              String
   phoneNumber       String
   email             String?     @unique
+  addresses         Address[]
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 }
 
+
+model Address {
+  id                String       @id @default(uuid())
+
+  houseNumber       String       
+  floor             String?      
+  area              String       
+  landmark          String?      
+  pincode           String?      
+
+  // we will get through Gio location api
+  latitude          Float?       
+  longitude         Float?       
+
+  // 🏷️ Type
+  type              AddressType  // home, work, hotel, other
+
+  // 👤 Relationship
+  userId            String
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 🕓 Metadata
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([latitude, longitude])
+}
+
+enum AddressType {
+  home
+  work
+  hotel
+  other
+}
