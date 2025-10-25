@@ -8,39 +8,39 @@ datasource db {
 }
 
 model User {
-  id                String      @id @default(uuid())
-  name              String
-  phoneNumber       String
-  email             String?     @unique
-  addresses         Address[]
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  id                        String    @id @default(uuid())
+  name                      String
+  phoneNumber               String
+  email                     String?   @unique
+  addresses                 Address[]
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
 
-
 model Address {
-  id                String       @id @default(uuid())
+  id String @id @default(uuid())
 
-  houseNumber       String       
-  floor             String?      
-  area              String       
-  landmark          String?      
-  pincode           String?      
+  houseNumber String
+  floor       String?
+  area        String
+  landmark    String?
+  pincode     String?
+  cityName    String?
 
   // we will get through Gio location api
-  latitude          Float?       
-  longitude         Float?       
+  latitude  Float?
+  longitude Float?
 
   // 🏷️ Type
-  type              AddressType  // home, work, hotel, other
+  type AddressType // home, work, hotel, other
 
   // 👤 Relationship
-  userId            String
-  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 🕓 Metadata
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([latitude, longitude])
@@ -51,4 +51,35 @@ enum AddressType {
   work
   hotel
   other
+}
+
+model Product {
+  id                        String   @id @default(uuid())
+  productTitle              String
+  description               String
+  media                     Media[]
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+model Media {
+  id                        String    @id @default(uuid())
+  url                       String
+  mediaType                 MediaType
+  prodcutId                 String
+  user                      Product   @relation(fields: [prodcutId], references: [id])
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+}
+
+enum MediaType {
+  image
+  video
+}
+
+
+model Orders {
+  id                        String    @id @default(uuid())
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
