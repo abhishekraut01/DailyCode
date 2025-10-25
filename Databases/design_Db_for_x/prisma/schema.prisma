@@ -23,12 +23,13 @@ model User {
   messagesSent      Message[]      @relation("SentMessages")
   messagesReceived  Message[]      @relation("ReceivedMessages")
   likes             Like[]
-  comment           Comment[]
   retweetsMade      Retweet[]      @relation("UserRetweets")
   retweetsOwned     Retweet[]      @relation("OriginalTweetOwner")
+  followers         Follow[]       @relation("UserFollowers")
+  following         Follow[]       @relation("UserFollowing")
+  comments          Comment[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
-
 }
 
 // ============================
@@ -42,6 +43,7 @@ model Profile {
   user            User            @relation("UserProfile", fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+
 }
 
 enum ProfileCategory {
@@ -59,6 +61,20 @@ enum ProfileCategory {
 }
 
 // ============================
+// Follow Table (Many-to-Many: User ↔ User)
+// ============================
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+}
+
+// ============================
 // Notification Table (One-to-Many with User)
 // ============================
 model Notification {
@@ -69,6 +85,7 @@ model Notification {
   user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
+
 }
 
 enum NotificationType {
@@ -106,7 +123,6 @@ model Tweet {
   retweets  Retweet[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-
 }
 
 // ============================
@@ -180,4 +196,4 @@ model Retweet {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-} 
+}
