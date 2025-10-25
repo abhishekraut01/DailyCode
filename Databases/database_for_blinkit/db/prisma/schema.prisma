@@ -7,41 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 👤 USER MODEL
 model User {
-  id                        String    @id @default(uuid())
-  name                      String
-  phoneNumber               String
-  email                     String?   @unique
-  addresses                 Address[]
-  orders                    Orders[]
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
+  id           String     @id @default(uuid())
+  name         String
+  phoneNumber  String     @unique
+  email        String?    @unique
+  addresses    Address[]
+  orders       Order[]
+  cartItems    CartItem[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
+//
+// 🏠 ADDRESS MODEL
+//
 model Address {
-  id String @id @default(uuid())
-
+  id          String     @id @default(uuid())
   houseNumber String
   floor       String?
   area        String
   landmark    String?
   pincode     String?
   cityName    String?
-
-  // we will get through Gio location api
-  latitude  Float?
-  longitude Float?
-
-  // 🏷️ Type
-  type AddressType // home, work, hotel, other
-
-  // 👤 Relationship
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders  Orders[]
-  // 🕓 Metadata
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  latitude    Float?
+  longitude   Float?
+  type        AddressType
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders      Order[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@index([userId])
   @@index([latitude, longitude])
@@ -54,16 +51,21 @@ enum AddressType {
   other
 }
 
+//
+// 🛒 PRODUCT MODEL
+//
 model Product {
-  id                        String   @id @default(uuid())
-  productTitle              String
-  description               String
-  price                     Int
-  category                  ProductCategory
-  media                     Media[]
-  orders                    Orders[]
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
+  id             String          @id @default(uuid())
+  title          String
+  description    String
+  price          Float
+  category       ProductCategory
+  media          Media[]
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  stockQuantity  Int              @default(0)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 enum ProductCategory {
@@ -72,16 +74,24 @@ enum ProductCategory {
   Eggs
   Snacks
   Munchies
+  Vegetables
+  Fruits
+  Beverages
+  PersonalCare
+  Household
 }
 
+//
+// 📸 MEDIA MODEL
+//
 model Media {
-  id                        String    @id @default(uuid())
-  url                       String
-  mediaType                 MediaType
-  prodcutId                 String
-  user                      Product   @relation(fields: [prodcutId], references: [id])
-  createdAt                 DateTime  @default(now())
-  updatedAt                 DateTime  @updatedAt
+  id         String   @id @default(uuid())
+  url        String
+  mediaType  MediaType
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 enum MediaType {
@@ -89,15 +99,72 @@ enum MediaType {
   video
 }
 
+//
+// 🛍️ CART MODEL (For items before placing order)
+//
+model CartItem {
+  id         String   @id @default(uuid())
+  userId     String
+  productId  String
+  quantity   Int      @default(1)
 
-model Orders {
-  id                        String        @id @default(uuid())
-  productId                 String    
-  userId                    String    
-  adressId                  String    
-  address                   Address       @relation(fields: [adressId], references: [id])
-  product                   Product       @relation(fields: [productId], references: [id])
-  user                      User          @relation(fields: [userId], references: [id])
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+//
+// 📦 ORDER MODEL
+//
+model Order {
+  id            String        @id @default(uuid())
+  userId        String
+  addressId     String
+  totalAmount   Float
+  paymentStatus PaymentStatus @default(PENDING)
+  orderStatus   OrderStatus   @default(PLACED)
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address       Address       @relation(fields: [addressId], references: [id])
+  items         OrderItem[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+//
+// 📦 ORDER ITEM MODEL (Each product inside an order)
+//
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  productId  String
+  quantity   Int
+  price      Float
+
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
