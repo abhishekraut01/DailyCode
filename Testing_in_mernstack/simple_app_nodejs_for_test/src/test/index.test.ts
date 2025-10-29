@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { sum, multiply, devide, substract } from "../index.js";
+import { sum, multiply, devide, substract } from "../index";
 
 describe("testing all calculator functionality", () => {
 
