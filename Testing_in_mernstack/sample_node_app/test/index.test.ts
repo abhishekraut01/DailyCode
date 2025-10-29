@@ -1,6 +1,6 @@
 import {describe, expect, test, it} from '@jest/globals';
 import request from "supertest";
-import { app } from "../index.js"
+import { app } from "../src/index.js"
 
 describe("POST /sum", () => {
     it("should return the sum of two numbers", async () => {
