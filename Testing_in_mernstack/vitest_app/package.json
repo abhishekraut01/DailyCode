@@ -11,9 +11,12 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/client": "^6.18.0",
     "@types/express": "^5.0.5",
     "@types/supertest": "^6.0.3",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "prisma": "^6.18.0",
     "supertest": "^7.1.4",
     "zod": "^4.1.12"
   },
