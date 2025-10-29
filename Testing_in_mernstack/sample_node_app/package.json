@@ -1,0 +1,23 @@
+{
+  "name": "sample_node_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@types/express": "^5.0.5",
+    "ts-jest": "^29.4.5"
+  },
+  "dependencies": {
+    "@types/supertest": "^6.0.3",
+    "express": "^5.1.0",
+    "supertest": "^7.1.4"
+  }
+}
