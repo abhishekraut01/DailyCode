@@ -1,5 +1,7 @@
 import express from "express";
 import { z } from 'zod'
+import {prismaClient} from "../db/index.ts";
+
 
 export const app = express();
 app.use(express.json());
@@ -9,7 +11,9 @@ const zodSchemaForSum = z.object({
     b: z.number()
 })
 
-app.post("/sum", (req, res) => {
+
+
+app.post("/sum",async  (req, res) => {
     const parsedData = zodSchemaForSum.safeParse(req.body)
 
     if (!parsedData.success) {
@@ -19,6 +23,14 @@ app.post("/sum", (req, res) => {
     }
 
     const answer = parsedData.data.a + parsedData.data.b
+
+    await prismaClient.sum.create({
+        data: {
+            a: parsedData.data.a,
+            b: parsedData.data.b,
+            result: answer
+        }
+    })
 
     res.json({
         answer
@@ -30,7 +42,7 @@ app.get("/sum", (req, res) => {
         a: Number(req.headers["a"]),
         b: Number(req.headers["b"])
     })
-    
+
     if (!parsedResponse.success) {
         return res.status(411).json({
             message: "Incorrect inputs"

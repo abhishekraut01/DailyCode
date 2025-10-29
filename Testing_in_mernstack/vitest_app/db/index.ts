@@ -1,5 +1,12 @@
 import {PrismaClient} from "@prisma/client"
 
-const prisma = new PrismaClient()
+export const prismaClient = new PrismaClient()
 
-export default prisma 
+
+//when someone runs the test cases he should get this 
+
+// const prismaClient ={
+//     sum:{
+//         create:()=>{}
+//     }
+// }
