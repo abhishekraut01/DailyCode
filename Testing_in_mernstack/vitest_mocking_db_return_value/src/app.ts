@@ -9,7 +9,7 @@ app.use(express.json());
 const zodUserSchema = z.object({
     id: z.string(),
     username: z.string().min(3),
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(8),
 });
 
@@ -22,7 +22,6 @@ app.post("/signup", async (req, res) => {
 
     const { id, username, email, password } = parsedData.data;
 
-    // check if email already exists
     const existing = await prismaClient.user.findUnique({
         where: { email }
     });
@@ -37,7 +36,6 @@ app.post("/signup", async (req, res) => {
 
     return res.status(200).json({ message: "User created", user });
 });
-
 
 // SIGNIN
 app.post("/signin", async (req, res) => {
@@ -55,12 +53,10 @@ app.post("/signin", async (req, res) => {
         return res.status(403).json({ message: "Invalid credentials" });
     }
 
-    // pretend this is JWT token but its just user.id for simplicity
     return res.status(200).json({ message: "Logged in", token: user.id });
 });
 
-
-// PROFILE (Using `token` header)
+// PROFILE (Using token header)
 app.get("/profile", async (req, res) => {
     const token = req.headers.token;
 
