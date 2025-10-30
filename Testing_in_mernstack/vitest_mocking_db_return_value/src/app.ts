@@ -22,59 +22,23 @@ app.post("/signup", async (req, res) => {
 
     const { id, username, email, password } = parsedData.data;
 
-    const existing = await prismaClient.user.findUnique({
-        where: { email }
-    });
+    // await prismaClient.user.findUnique({
+    //     where: { email }
+    // });
 
-    if (existing) {
+    // if (existing) {
+    //     return res.status(409).json({ message: "User already exists" });
+    // }
+
+    // await prismaClient.user.create({
+    //     data: { id, username, email, password }
+    // });
+
+    if (username === "abhishek_great") {
         return res.status(409).json({ message: "User already exists" });
+    } else {
+        return res.status(200).json({ message: "User created" });
     }
 
-    const user = await prismaClient.user.create({
-        data: { id, username, email, password }
-    });
 
-    return res.status(200).json({ message: "User created", user });
-});
-
-// SIGNIN
-app.post("/signin", async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(411).json({ message: "Incorrect inputs" });
-    }
-
-    const user = await prismaClient.user.findUnique({
-        where: { email }
-    });
-
-    if (!user || user.password !== password) {
-        return res.status(403).json({ message: "Invalid credentials" });
-    }
-
-    return res.status(200).json({ message: "Logged in", token: user.id });
-});
-
-// PROFILE (Using token header)
-app.get("/profile", async (req, res) => {
-    const token = req.headers.token;
-
-    if (!token || typeof token !== "string") {
-        return res.status(403).json({ message: "Unauthorized" });
-    }
-
-    const user = await prismaClient.user.findUnique({
-        where: { id: token }
-    });
-
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
-
-    return res.status(200).json({
-        id: user.id,
-        username: user.username,
-        email: user.email
-    });
 });
