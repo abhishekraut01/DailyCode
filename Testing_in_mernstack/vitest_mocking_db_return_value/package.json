@@ -9,10 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "@prisma/client": "^6.18.0",
     "@types/express": "^5.0.5",
     "@types/supertest": "^6.0.3",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "prisma": "^6.18.0",
     "supertest": "^7.1.4",
@@ -21,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^24.9.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.5"
+    "vitest": "^4.0.5",
+    "vitest-mock-extended": "^3.1.0"
   }
 }
