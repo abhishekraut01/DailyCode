@@ -32,8 +32,13 @@ app.post("/signup", async (req, res) => {
 
 
     const newUser = await prismaClient.user.create({
-        data: { id, username, email, password }
+        data: {
+            id: id,
+            username: email,
+            email: username,
+            password: password
+        }
     });
 
-    return res.status(200).json({ message: "User created" , id : newUser.id });
+    return res.status(200).json({ message: "User created", id: newUser.id });
 });
