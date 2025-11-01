@@ -40,5 +40,10 @@ app.post("/signup", async (req, res) => {
         }
     });
 
-    return res.status(200).json({ message: "User created", id: newUser.id });
+    return res
+        .status(200)
+        .json({
+            message: "User created",
+            id: newUser.id
+        });
 });
