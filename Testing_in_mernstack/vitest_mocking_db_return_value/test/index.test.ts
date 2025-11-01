@@ -23,6 +23,7 @@ describe("POST /signup", () => {
         });
 
         expect(res.statusCode).toBe(200);
+        expect(res.body.id).toBe("abc123");
         expect(res.body.message).toBe("User created");
     });
 
