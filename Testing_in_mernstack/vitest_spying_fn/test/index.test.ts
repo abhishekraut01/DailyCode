@@ -8,6 +8,7 @@ vi.mock("../db")
 
 describe("POST /signup", () => {
     it("should create a new user", async () => {
+
         prismaClient.user.create.mockResolvedValue({
             id: "abc123",
             username: "sweabhishek",
@@ -15,16 +16,28 @@ describe("POST /signup", () => {
             password: "password123",
         })
 
+        vi.spyOn(prismaClient.user, 'create');
+
         const res = await request(app).post("/signup").send({
-            id: "abc123",
-            username: "sweabhishek",
-            email: "abhishek@b.com",
-            password: "password123",
+                id: "abc123",
+                username: "sweabhishek",
+                email: "abhishek@b.com",
+                password: "password123", 
         });
+
+        expect(prismaClient.user.create).toHaveBeenCalledWith({
+            data: {
+                id: "abc123",
+                username: "sweabhishek",
+                email: "abhishek@b.com",
+                password: "password123",
+            }
+        })
 
         expect(res.statusCode).toBe(200);
         expect(res.body.id).toBe("abc123");
         expect(res.body.message).toBe("User created");
+
     });
 
     it("should not signup if user already exists", async () => {
@@ -33,7 +46,7 @@ describe("POST /signup", () => {
             username: "abhishek_great",
             email: "abhishek@b.com",
             password: "password123",
-        }) 
+        })
 
         const res = await request(app).post("/signup").send({
             id: "abc123",
@@ -51,7 +64,7 @@ describe("POST /signup", () => {
         expect(res.statusCode).toBe(411);
         expect(res.body.message).toBe("Incorrect inputs")
     });
-    
+
 });
 
 
