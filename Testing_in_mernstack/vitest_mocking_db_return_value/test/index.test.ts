@@ -1,10 +1,19 @@
 import { describe, vi, it, expect } from "vitest";
 import request from "supertest";
 import { app } from "../src/app.js";
+import { prismaClient } from "../db/__mocks__/index.js";
 
+
+vi.mock("../db")
 
 describe("POST /signup", () => {
     it("should create a new user", async () => {
+        prismaClient.user.create.mockResolvedValue({
+            id: "abc123",
+            username: "sweabhishek",
+            email: "abhishek@b.com",
+            password: "password123",
+        })
 
         const res = await request(app).post("/signup").send({
             id: "abc123",
@@ -18,6 +27,12 @@ describe("POST /signup", () => {
     });
 
     it("should not signup if user already exists", async () => {
+        prismaClient.user.findUnique.mockResolvedValue({
+            id: "abc123",
+            username: "abhishek_great",
+            email: "abhishek@b.com",
+            password: "password123",
+        }) 
 
         const res = await request(app).post("/signup").send({
             id: "abc123",

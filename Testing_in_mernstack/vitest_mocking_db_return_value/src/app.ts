@@ -22,23 +22,19 @@ app.post("/signup", async (req, res) => {
 
     const { id, username, email, password } = parsedData.data;
 
-    // await prismaClient.user.findUnique({
-    //     where: { email }
-    // });
+    const existing = await prismaClient.user.findUnique({
+        where: { email }
+    });
+    console.log("existing" , existing)
 
-    // if (existing) {
-    //     return res.status(409).json({ message: "User already exists" });
-    // }
-
-    // await prismaClient.user.create({
-    //     data: { id, username, email, password }
-    // });
-
-    if (username === "abhishek_great") {
+    if (existing) {
         return res.status(409).json({ message: "User already exists" });
-    } else {
-        return res.status(200).json({ message: "User created" });
     }
 
 
+    const newUser = await prismaClient.user.create({
+        data: { id, username, email, password }
+    });
+
+    return res.status(200).json({ message: "User created" , id : newUser.id });
 });
