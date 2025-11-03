@@ -1,8 +1,7 @@
-import {z} from "zod"
-
+import { z } from "zod"
 
 export const userSignupSchema = z.object({
-    username:string().min(3),
-    email:email().min(8),
-    password:string().min(8)
+    username: z.string().min(8),
+    email: z.email().min(8),
+    password: z.string().min(8)
 })

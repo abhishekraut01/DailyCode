@@ -1,0 +1,1 @@
+{"root":["./src/app.ts","./src/index.ts","./src/controllers/user.controller.ts","./src/db/prisma.db.ts","./src/routes/user.routes.ts","./src/utils/aysnchandler.utils.ts","./src/validations/user.validation.ts"],"version":"5.9.3"}
