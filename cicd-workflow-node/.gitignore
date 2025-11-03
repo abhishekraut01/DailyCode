@@ -1,4 +1,45 @@
-node_modules
-/dist
-/src/generated/prisma
-/src/generated/prisma
+#!/bin/bash
+set -e
+
+APP_NAME="node-ts-app"
+APP_DIR="/home/ubuntu/Deploy_node_app_CiCd"
+REPO_URL="https://github.com/abhishekraut01/Deploy_node_app_CiCd"
+
+echo "🚀 Starting deployment process..."
+cd "$APP_DIR" || { echo "❌ Directory not found!"; exit 1; }
+
+echo "🔄 Pulling latest code..."
+git fetch origin main
+
+# Backup .env safely
+if [ -f ".env" ]; then
+    echo "🧾 Backing up .env..."
+    cp .env /tmp/.env.backup
+fi
+
+git reset --hard origin/main
+
+# Restore .env
+if [ -f "/tmp/.env.backup" ]; then
+    echo "🔁 Restoring .env..."
+    mv /tmp/.env.backup .env
+fi
+
+echo "📦 Installing dependencies (including devDependencies)..."
+npm install
+
+echo "🏗️ Building project..."
+npm run build
+
+if pm2 list | grep -q "$APP_NAME"; then
+    echo "♻️ Restarting PM2 process..."
+    pm2 stop "$APP_NAME"
+    pm2 delete "$APP_NAME"
+fi
+
+echo "🚀 Starting app with PM2..."
+pm2 start npm --name "$APP_NAME" -- start
+pm2 save
+
+echo "✅ Deployment completed successfully!"
+pm2 status "$APP_NAME"

@@ -1,0 +1,1 @@
+ssh -t -i newAwsAcc.pem ubuntu@3.24.240.85 "cd /home/ubuntu && bash deploy.sh
