@@ -1,21 +1,21 @@
 import exprss, { type Request, type Response } from 'express'
 import prisma from './databases/index.js'
+import { asyncHandler } from './utils/asyncHandler.js'
 
 const app = exprss()
 
-app.get('/api/v1/users', async (req: Request, res: Response) => {
-        const response = await prisma.findUnique({
+app.get('/api/v1/users/:id', asyncHandler(async (req: Request, res: Response) => {
+    const response = await prisma.findUnique({
         where: {
             id: 1
         }
     });
 
-    res.status()
-})
-
-app.get('/api/v1/users:id ', (req: Request, res: Response) => {
-
-})
+    res.status(200).json({
+        message:"data fetched successfully",
+        data:response
+    })
+}))
 
 
 app.listen(3000, () => {
