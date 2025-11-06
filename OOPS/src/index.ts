@@ -6,37 +6,36 @@ import { asyncHandler } from "./utils/asyncHandler.js";
 const app = express();
 app.use(express.json());
 
-// ✅ GET /api/v1/users/:id
-// app.get("/api/v1/users/:id", asyncHandler(async (req: Request, res: Response) => {
-//     const userId = Number(req.params.id);
 
-//     if (isNaN(userId)) {
-//         res.status(400).json({ message: "Invalid user ID" });
-//         return;
-//     }
-
-//     const response = await prisma.findUnique({
-//         where: { id: userId },
-//     });
-
-//     if (!response) {
-//         res.status(404).json({
-//             message: "User not found",
-//         });
-//         return;
-//     }
-
-//     res.status(200).json({
-//         message: "Data fetched successfully",
-//         data: response,
-//     });
-// })
-// );
-
-
-app.get('/', (req, res) => {
+app.get('/', (req, res) => { 
     res.send("hello world")
 })
+
+app.get("/api/v1/users/:id", asyncHandler(async (req: Request, res: Response) => {
+    const userId = Number(req.params.id);
+
+    if (isNaN(userId)) {
+        res.status(400).json({ message: "Invalid user ID" });
+        return;
+    }
+
+    const response = await prisma.findUnique({
+        where: { id: userId },
+    });
+
+    if (!response) {
+        res.status(404).json({
+            message: "User not found",
+        });
+        return;
+    }
+
+    res.status(200).json({
+        message: "Data fetched successfully",
+        data: response,
+    });
+})
+);
 
 // ✅ Global Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
