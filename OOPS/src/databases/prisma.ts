@@ -54,15 +54,23 @@ const Database = [
 type DatabaseUserType = typeof Database[number];
 type OptionalUser = Partial<DatabaseUserType>;
 interface Prisma {
-    findUnique(where: OptionalUser): OptionalUser | undefined;
+    findUnique(where: OptionalUser): Promise<OptionalUser | null>;
 }
 
 export class PrismaClient implements Prisma {
-    findUnique(where: OptionalUser): OptionalUser | undefined {
+
+    private simulateDelay(): Promise<void> {
+        // Simulate network/database delay (10-50ms)
+        const delay = Math.floor(Math.random() * 40) + 10;
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    async findUnique(where: OptionalUser): Promise<OptionalUser | null> {
+        await this.simulateDelay();
+
         for (const elem of Database) {
             let match = true;
 
-            // Loop over all keys provided in `where`
             for (const key in where) {
                 const k = key as keyof DatabaseUserType;
                 if (where[k] !== elem[k]) {
@@ -71,11 +79,12 @@ export class PrismaClient implements Prisma {
                 }
             }
 
-            if (match) return elem; // return first match like Prisma's findUnique
+            if (match) return elem;
         }
 
-        return undefined; // if no match found
+        return null;
     }
+    
 }
 
 
