@@ -3,7 +3,7 @@ import Database from "./bank_accounts.json" with { type: "json" };
 type DatabaseUserType = typeof Database[number];
 type OptionalUser = Partial<DatabaseUserType>;
 interface Prisma {
-    findUnique(where: OptionalUser): Promise<OptionalUser | null>;
+    findUnique(args : {where: OptionalUser}): Promise<OptionalUser | null>;
 }
 
 export class PrismaClient implements Prisma {
@@ -14,8 +14,9 @@ export class PrismaClient implements Prisma {
         return new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    async findUnique(where: OptionalUser): Promise<OptionalUser | null> {
+    async findUnique(args : {where: OptionalUser}): Promise<OptionalUser | null> {
         await this.simulateDelay();
+        const { where } = args;
 
         for (const elem of Database) {
             let match = true;
