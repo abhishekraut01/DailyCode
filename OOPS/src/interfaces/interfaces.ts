@@ -1,4 +1,4 @@
-enum AccountTypeEnum {
+export enum AccountTypeEnum {
   SAVINGS = "savings",
   CURRENT = "current"
 }
@@ -16,8 +16,8 @@ interface Bank {
 }
 
 
-class AxisBank implements Bank {
-  private accountType: AccountTypeEnum;
+export class AxisBank implements Bank {
+  public accountType: AccountTypeEnum;
   private balance: number = 0;
   private accountHolderName: string;
   private accountNumber: number;
@@ -53,10 +53,4 @@ class AxisBank implements Bank {
 }
 
 
-const newUser = new AxisBank(AccountTypeEnum.CURRENT, "Abhishek");
 
-newUser.deposit(5000);
-newUser.withdraw(2000);
-
-console.log(newUser.getUserDetails());
-console.log("Current Balance:", newUser.getBalance());
