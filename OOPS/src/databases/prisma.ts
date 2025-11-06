@@ -51,11 +51,10 @@ const Database = [
     },
 ];
 
-type databseUserType = typeof Database[0]
-type OptionalUser = Partial<databseUserType>;
+type DatabaseUserType = typeof Database[number];
+type OptionalUser = Partial<DatabaseUserType>;
 interface Prisma {
     findUnique(where: OptionalUser): OptionalUser | undefined;
-    findMany(where: OptionalUser): OptionalUser[]
 }
 
 export class PrismaClient implements Prisma {
@@ -65,7 +64,8 @@ export class PrismaClient implements Prisma {
 
             // Loop over all keys provided in `where`
             for (const key in where) {
-                if (where[key as keyof OptionalUser] !== elem[key as keyof DatabaseUserType]) {
+                const k = key as keyof DatabaseUserType;
+                if (where[k] !== elem[k]) {
                     match = false;
                     break;
                 }
@@ -76,10 +76,6 @@ export class PrismaClient implements Prisma {
 
         return undefined; // if no match found
     }
-    findMany(where: OptionalUser): OptionalUser[] {
-        return Database.filter(elem =>
-            Object.entries(where).every(([key, value]) => elem[key as keyof DatabaseUserType] === value)
-        );
-    }
-
 }
+
+
