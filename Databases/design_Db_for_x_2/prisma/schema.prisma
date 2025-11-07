@@ -44,15 +44,66 @@ model Tweet{
   updated_at              DateTime        @updatedAt
 }
 
-
-
 model Media{
   id                      String          @id         @default(uuid())
+  userId                  String
+  tweetId                 String
   mediaType               MediaType
   created_at              DateTime        @default(now())
   updated_at              DateTime        @updatedAt
 }
 
 enum MediaType {
-  
+  image
+  video
+  gif
+}
+
+model Like {
+  id                       String         @id           @default(uuid())
+  userId                   String
+  tweetId                  String
+  commetId                 String
+  created_at               DateTime       @default(now())
+  updated_at               DateTime       @updatedAt
+}
+
+model Comment {
+  id                       String         @id           @default(uuid())
+  userId                   String
+  tweetId                  String
+  created_at               DateTime       @default(now())
+  updated_at               DateTime       @updatedAt
+}
+
+model Retweets {
+  id                       String         @id           @default(uuid())
+  userId                   String
+  ownerId                  String
+  tweetId                  String
+  created_at               DateTime       @default(now())
+  updated_at               DateTime       @updatedAt
+}
+
+model Messages {
+  id                       String         @id           @default(uuid())
+  senderId                 String
+  recieverId               String
+  content                  String
+  created_at               DateTime       @default(now())
+  updated_at               DateTime       @updatedAt
+}
+
+model Notifications {
+  id                       String         @id           @default(uuid())
+  tweetId                  String
+  type                     NotificationsType
+  userId                   String
+  created_at               DateTime       @default(now())
+  updated_at               DateTime       @updatedAt
+}
+
+enum NotificationsType {
+  system
+  user
 }
