@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id                      String          @id         @default(uuid())
+  username                String          @unique
+  password                String          
+  is_verified             Boolean         @default(false)
+  created_at              DateTime        @default(now())
+  updated_at              DateTime        @updatedAt
+}
+
+model Profile{
+  id                      String          @id         @default(uuid())
+  userId                  String
+  category                CategotyType
+  bio                     String
+  created_at              DateTime        @default(now())
+  updated_at              DateTime        @updatedAt
+}
+
+enum CategotyType {
+  education
+  influencer
+  business 
+  industry
+  orgenization
+  entrepreneur
+  other
+}
+
+model Tweet{
+  id                      String          @id         @default(uuid())
+  userId                  String
+  content                 String
+  mediaId                 String
+  created_at              DateTime        @default(now())
+  updated_at              DateTime        @updatedAt
+}
+
+
+
+model Media{
+  id                      String          @id         @default(uuid())
+  mediaType               MediaType
+  created_at              DateTime        @default(now())
+  updated_at              DateTime        @updatedAt
+}
+
+enum MediaType {
+  
+}
