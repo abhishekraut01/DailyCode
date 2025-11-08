@@ -7,24 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users{
-  id                      String          @id         @default(uuid())
-  username                String          @unique
-  password                String       
-  is_verified             Boolean         @default(false)
-  created_at              DateTime        @default(now())
-  updated_at              DateTime        @updatedAt
+model Users {
+  id              String     @id @default(uuid())
+  username        String     @unique
+  password        String
+  is_verified     Boolean    @default(false)
+  profile         Profiles?  @relation("userProfile")
+  tweets          Tweets[]   @relation("tweetsRelation")
+  comments        Comments[]
+  retweetsMade    Retweets[] @relation("UserRetweets")
+  retweetsOwn     Retweets[] @relation("OriginalTweetOwner")
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  messagesSent    Messages[] @relation("senderRelation")
+  messagesRecieve Messages[] @relation("recieverRelation")
 }
 
-model Profiles{
-  id                      String          @id         @default(uuid())
-  userId                  String
-  category                ProfileCategory
-  bio                     String
-  mediaId                 String
-  profilePicture          String
-  created_at              DateTime        @default(now())
-  updated_at              DateTime        @updatedAt
+model Profiles {
+  id             String          @id @default(uuid())
+  userId         String          @unique
+  category       ProfileCategory
+  bio            String
+  mediaId        String
+  profilePicture String
+  user           Users           @relation("userProfile", fields: [userId], references: [id], onDelete: Cascade)
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
 }
 
 enum ProfileCategory {
@@ -41,23 +49,28 @@ enum ProfileCategory {
   Other
 }
 
-model Tweets{
-  id                      String          @id         @default(uuid())
-  userId                  String
-  content                 String
-  mediaId                 String
-  created_at              DateTime        @default(now())
-  updated_at              DateTime        @updatedAt
+model Tweets {
+  id         String     @id @default(uuid())
+  userId     String
+  content    String
+  media      Medias[]   @relation("mediaRelation")
+  user       Users      @relation("tweetsRelation", fields: [userId], references: [id], onDelete: Cascade)
+  comments   Comments[] @relation("commentRelation")
+  Likes      Likes[]
+  retweets   Retweets[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
 }
 
-model Medias{
-  id                      String          @id         @default(uuid())
-  userId                  String
-  tweetId                 String
-  url                     String
-  mediaType               MediaType
-  created_at              DateTime        @default(now())
-  updated_at              DateTime        @updatedAt
+model Medias {
+  id         String    @id @default(uuid())
+  userId     String
+  tweetId    String
+  url        String
+  mediaType  MediaType
+  Tweets     Tweets    @relation("mediaRelation", fields: [tweetId], references: [id], onDelete: Cascade)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 enum MediaType {
@@ -67,49 +80,65 @@ enum MediaType {
 }
 
 model Likes {
-  id                       String         @id           @default(uuid())
-  userId                   String
-  tweetId                  String
-  commetId                 String
-  created_at               DateTime       @default(now())
-  updated_at               DateTime       @updatedAt
-} 
+  id         String    @id @default(uuid())
+  userId     String
+  tweetId    String?
+  commetId   String?
+  likeType   LikeType
+  tweets     Tweets?   @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+  comments   Comments? @relation(fields: [commetId], references: [id], onDelete: Cascade)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+}
+
+enum LikeType {
+  TWEET
+  COMMENT
+}
 
 model Comments {
-  id                       String         @id           @default(uuid())
-  userId                   String
-  tweetId                  String
-  content                  String
-  created_at               DateTime       @default(now())
-  updated_at               DateTime       @updatedAt
+  id         String   @id @default(uuid())
+  userId     String
+  tweetId    String
+  content    String
+  tweet      Tweets   @relation("commentRelation", fields: [tweetId], references: [id], onDelete: Cascade)
+  user       Users    @relation(fields: [userId], references: [id])
+  likes      Likes[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Retweets {
-  id                       String         @id           @default(uuid())
-  tweetId                  String           
-  originalOwnerId          String           
-  retweetUserId            String           
-  created_at               DateTime       @default(now())
-  updated_at               DateTime       @updatedAt
+  id              String   @id @default(uuid())
+  tweetId         String
+  originalOwnerId String
+  retweetUserId   String
+  tweets          Tweets   @relation(fields: [tweetId], references: [id])
+  retweetUser     Users    @relation("UserRetweets", fields: [retweetUserId], references: [id], onDelete: Cascade)
+  originalOwner   Users    @relation("OriginalTweetOwner", fields: [originalOwnerId], references: [id], onDelete: Cascade)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 }
 
 model Messages {
-  id                       String         @id           @default(uuid())
-  senderId                 String
-  recieverId               String
-  content                  String
-  isSeen                   Boolean        @default(false)
-  created_at               DateTime       @default(now())
-  updated_at               DateTime       @updatedAt
+  id         String   @id @default(uuid())
+  senderId   String
+  recieverId String
+  content    String
+  sender     Users    @relation("senderRelation", fields: [senderId], references: [id], onDelete: Cascade)
+  reciever   Users    @relation("recieverRelation", fields: [recieverId], references: [id], onDelete: Cascade)
+  isSeen     Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Notifications {
-  id        String            @id @default(uuid())   
-  userId    String                               
+  id        String            @id @default(uuid())
+  userId    String
   content   String
-  type      NotificationsType                    
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  type      NotificationsType
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now())
 }
 
 enum NotificationsType {
