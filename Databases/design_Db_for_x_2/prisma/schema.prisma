@@ -7,35 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
+model Users{
   id                      String          @id         @default(uuid())
   username                String          @unique
-  password                String          
+  password                String       
   is_verified             Boolean         @default(false)
   created_at              DateTime        @default(now())
   updated_at              DateTime        @updatedAt
 }
 
-model Profile{
+model Profiles{
   id                      String          @id         @default(uuid())
   userId                  String
-  category                CategotyType
+  category                ProfileCategory
   bio                     String
+  mediaId                 String
+  profilePicture          String
   created_at              DateTime        @default(now())
   updated_at              DateTime        @updatedAt
 }
 
-enum CategotyType {
-  education
-  influencer
-  business 
-  industry
-  orgenization
-  entrepreneur
-  other
+enum ProfileCategory {
+  Education
+  Financial
+  Professional
+  Advertising
+  Science
+  Sport
+  Travel
+  Influencer
+  Entrepreneur
+  Community
+  Other
 }
 
-model Tweet{
+model Tweets{
   id                      String          @id         @default(uuid())
   userId                  String
   content                 String
@@ -44,10 +50,11 @@ model Tweet{
   updated_at              DateTime        @updatedAt
 }
 
-model Media{
+model Medias{
   id                      String          @id         @default(uuid())
   userId                  String
   tweetId                 String
+  url                     String
   mediaType               MediaType
   created_at              DateTime        @default(now())
   updated_at              DateTime        @updatedAt
@@ -59,28 +66,29 @@ enum MediaType {
   gif
 }
 
-model Like {
+model Likes {
   id                       String         @id           @default(uuid())
   userId                   String
   tweetId                  String
   commetId                 String
   created_at               DateTime       @default(now())
   updated_at               DateTime       @updatedAt
-}
+} 
 
-model Comment {
+model Comments {
   id                       String         @id           @default(uuid())
   userId                   String
   tweetId                  String
+  content                  String
   created_at               DateTime       @default(now())
   updated_at               DateTime       @updatedAt
 }
 
 model Retweets {
   id                       String         @id           @default(uuid())
-  userId                   String
-  ownerId                  String
-  tweetId                  String
+  tweetId                  String           
+  originalOwnerId          String           
+  retweetUserId            String           
   created_at               DateTime       @default(now())
   updated_at               DateTime       @updatedAt
 }
@@ -90,20 +98,21 @@ model Messages {
   senderId                 String
   recieverId               String
   content                  String
+  isSeen                   Boolean        @default(false)
   created_at               DateTime       @default(now())
   updated_at               DateTime       @updatedAt
 }
 
 model Notifications {
-  id                       String         @id           @default(uuid())
-  tweetId                  String
-  type                     NotificationsType
-  userId                   String
-  created_at               DateTime       @default(now())
-  updated_at               DateTime       @updatedAt
+  id        String            @id @default(uuid())   
+  userId    String                               
+  content   String
+  type      NotificationsType                    
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 enum NotificationsType {
-  system
   user
+  system
 }
