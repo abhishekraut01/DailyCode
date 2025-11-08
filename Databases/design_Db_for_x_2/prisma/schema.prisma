@@ -8,19 +8,22 @@ datasource db {
 }
 
 model Users {
-  id              String     @id @default(uuid())
-  username        String     @unique
+  id              String          @id @default(uuid())
+  username        String          @unique
   password        String
-  is_verified     Boolean    @default(false)
-  profile         Profiles?  @relation("userProfile")
-  tweets          Tweets[]   @relation("tweetsRelation")
+  is_verified     Boolean         @default(false)
+  profile         Profiles?       @relation("userProfile")
+  tweets          Tweets[]        @relation("tweetsRelation")
   comments        Comments[]
-  retweetsMade    Retweets[] @relation("UserRetweets")
-  retweetsOwn     Retweets[] @relation("OriginalTweetOwner")
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
-  messagesSent    Messages[] @relation("senderRelation")
-  messagesRecieve Messages[] @relation("recieverRelation")
+  retweetsMade    Retweets[]      @relation("UserRetweets")
+  retweetsOwn     Retweets[]      @relation("OriginalTweetOwner")
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  messagesSent    Messages[]      @relation("senderRelation")
+  messagesRecieve Messages[]      @relation("recieverRelation")
+  notifications   Notifications[] @relation("notificationRelation")
+  follower        Follow[]        @relation("FollowerRelation")
+  following       Follow[]        @relation("FollowingRelation")
 }
 
 model Profiles {
@@ -53,13 +56,23 @@ model Tweets {
   id         String     @id @default(uuid())
   userId     String
   content    String
-  media      Medias[]   @relation("mediaRelation")
   user       Users      @relation("tweetsRelation", fields: [userId], references: [id], onDelete: Cascade)
+  media      Medias[]   @relation("mediaRelation")
   comments   Comments[] @relation("commentRelation")
   Likes      Likes[]
   retweets   Retweets[]
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
+}
+
+model Follow {
+  id           String   @id @default(uuid())
+  followerId   String
+  FollowringId String
+  follower     Users    @relation("FollowerRelation",fields: [followerId], references: [id], onDelete: Cascade)
+  following    Users    @relation("FollowingRelation",fields: [FollowringId], references: [id], onDelete: Cascade)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 model Medias {
@@ -136,6 +149,7 @@ model Notifications {
   id        String            @id @default(uuid())
   userId    String
   content   String
+  user      Users             @relation("notificationRelation", fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationsType
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now())
