@@ -5,13 +5,15 @@ metadata:
 
 spec:
   replicas: 3
+
   selector:
     matchLabels:
       app: nginx
 
   template:
-    labels:
-      app: nginx
+    metadata:
+      labels:
+        app: nginx
 
     spec:
       containers:
