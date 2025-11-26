@@ -1,24 +1,24 @@
-const React = {
-  createElement: function createElement(tag, attributes, children) {
-    const element = document.createElement(tag);
-    element.innerText = children;
+// const React = {
+//   createElement: function createElement(tag, attributes, children) {
+//     const element = document.createElement(tag);
+//     element.innerText = children;
 
-    for (let key in attributes) {
-      if (key === "style") {
-        Object.assign(element.style, attributes.style);
-      } else {
-        element[key] = attributes[key];
-      }
-    }
-    return element;
-  },
-};
+//     for (let key in attributes) {
+//       if (key === "style") {
+//         Object.assign(element.style, attributes.style);
+//       } else {
+//         element[key] = attributes[key];
+//       }
+//     }
+//     return element;
+//   },
+// };
 
-const reactDOM = {
-  render: function (element, root) {
-    root.appendChild(element);
-  },
-};
+// const ReactDOM = {
+//   render: function (element, root) {
+//     root.appendChild(element);
+//   },
+// };
 
 const elem1 = React.createElement(
   "h1",
@@ -32,5 +32,9 @@ const elem1 = React.createElement(
   },
   "I am trying to create my custom react"
 );
-const root = document.getElementById("root")
-reactDOM.render(elem1 , root)
+
+const root = document.getElementById("root");
+ReactDOM.render(elem1, root);
+
+
+
