@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment-configmap
@@ -18,8 +18,15 @@ spec:
           ports:
             - containerPort: 3000
           env:
-          - name: PORT
+            - name: PORT
               valueFrom:
                 configMapKeyRef:
                   name: backend-config
                   key: port
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: postgres_password
+
