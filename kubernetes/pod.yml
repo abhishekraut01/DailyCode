@@ -10,9 +10,9 @@ spec:
     ports:
     - containerPort: 27017
     volumeMounts:
-    - mountPath: "/data/db"
-      name: nfs-volume
+    - name: mongo-storage
+      mountPath: /data/db
   volumes:
-  - name: nfs-volume
+  - name: mongo-storage
     persistentVolumeClaim:
-      claimName: nfs-pvc
+      claimName: csi-pvc
