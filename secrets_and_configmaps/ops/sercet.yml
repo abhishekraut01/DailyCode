@@ -3,4 +3,4 @@ kind: Secret
 metadata:
   name: backend-secret
 data:
-  postgres_url: cG9zdGdyZXNxbDovL3Bvc3RncmVzOnN3ZWFiaGlzaGVrcmF1dEBsb2NhbGhvc3Q6NTQzMg==
+  .env: UE9TVEdSRVNfUEFTU09XUkQgPSBwb3N0Z3Jlc3M6Ly9wb3N0Z3Jlczpzd2VhYmhpc2hla3JhdXRAbG9jYWxob3N0OjU0MzIKSldUX1NFQ1JFVD1hYmhpc2hla3RoaXNpc215SkVUa3NoaFdEbGFqRXB3blNkbApQT1JUPTMwMDAK

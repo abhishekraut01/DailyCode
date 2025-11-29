@@ -17,16 +17,13 @@ spec:
           image: sweabhishek/ts-node-app:v1
           ports:
             - containerPort: 3000
-          env:
-            - name: PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: backend-config
-                  key: port
-
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: backend-secret
-                  key: postgres_password
+          volumeMounts:
+            - name: env-file
+              mountPath: "/app/.env"
+              subPath: ".env"
+              readOnly: true
+      volumes:
+        - name: env-file
+          secret:
+            secretName: backend-secret
 
