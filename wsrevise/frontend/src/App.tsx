@@ -25,7 +25,11 @@ function App() {
       setMessages(prev => [...prev, event.data])
     }
 
-  }, [])
+    return ()=>{
+      socket?.close()
+    }
+
+  }, [socket])
 
   if (!socket) {
     return <div>Loading...</div>
