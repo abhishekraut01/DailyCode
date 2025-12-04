@@ -1,42 +1,45 @@
 import { WebSocketServer, WebSocket } from "ws";
 
-const wss = new WebSocketServer({
-  port: 8000,
-});
+const wss = new WebSocketServer({ port: 8000 })
 
-interface User {
-  soket: WebSocket;
-  roomId: string;
+interface IUser {
+  roomId: string,
+  socket: WebSocket
 }
 
-const users: User[] = [];
+const users: IUser[] = []
 
-wss.on("connection", (soket) => {
-  soket.on("message", (message) => {
-    const parseMessage = JSON.parse(message.toString());
+wss.on("connection", (socket) => {
+  socket.on("message", (message) => {
+    const parsedData = JSON.parse(message.toString())
 
-    if (parseMessage.type == "join") {
+    if (parsedData.type === "join") {
       users.push({
-        soket: soket,
-        roomId: parseMessage.roomId,
-      });
-
-      soket.send("you are joined in room");
+        roomId: parsedData.roomId,
+        socket: socket
+      })
+      socket.send("You joined room " + parsedData.roomId)
     }
 
-    if (parseMessage.type == "chat") {
-      let currentUserRoomId = null;
-      for (let i = 0; i < users.length; i++) {
-        if (users[i].soket == soket) {
-          currentUserRoomId = users[i].roomId;
-        }
-      }
+    if (parsedData.type === "chat") {
+      const { message } = parsedData
 
-      for (let i = 0; i < users.length; i++) {
-        if (users[i].roomId == currentUserRoomId) {
-          users[i].soket.send(`Message from server ${parseMessage.message}`);
+      const user = users.find((u) => u.socket === socket)
+      if (!user) return
+
+      const senderRoomId = user.roomId
+
+      users.forEach((client) => {
+        if (client.roomId === senderRoomId && client.socket !== socket) {
+          client.socket.send("message", message)
         }
-      }
+      })
     }
-  });
-});
+
+  })
+
+  socket.on("close", () => {
+    const index = users.findIndex((u) => u.socket === socket)
+    if (index !== -1) users.splice(index, 1)
+  })
+})
