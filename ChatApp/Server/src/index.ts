@@ -1,45 +1,58 @@
 import { WebSocketServer, WebSocket } from "ws";
 
-const wss = new WebSocketServer({ port: 8000 })
+const wss = new WebSocketServer({ port: 8000 });
 
 interface IUser {
-  roomId: string,
-  socket: WebSocket
+  roomId: string;
+  socket: WebSocket;
 }
 
-const users: IUser[] = []
+const users: IUser[] = [];
 
 wss.on("connection", (socket) => {
-  socket.on("message", (message) => {
-    const parsedData = JSON.parse(message.toString())
+  socket.on("message", (rawMessage) => {
+    const parsed = JSON.parse(rawMessage.toString());
 
-    if (parsedData.type === "join") {
+    // ----------- Join Room -----------
+    if (parsed.type === "join") {
       users.push({
-        roomId: parsedData.roomId,
+        roomId: parsed.roomId,
         socket: socket
-      })
-      socket.send("You joined room " + parsedData.roomId)
+      });
+
+      socket.send(
+        JSON.stringify({
+          type: "system",
+          data: `You joined room ${parsed.roomId}`
+        })
+      );
     }
 
-    if (parsedData.type === "chat") {
-      const { message } = parsedData
+    // ----------- Chat Message -----------
+    if (parsed.type === "chat") {
+      const { text } = parsed;
 
-      const user = users.find((u) => u.socket === socket)
-      if (!user) return
+      const user = users.find((u) => u.socket === socket);
+      if (!user) return;
 
-      const senderRoomId = user.roomId
+      const senderRoomId = user.roomId;
 
       users.forEach((client) => {
         if (client.roomId === senderRoomId && client.socket !== socket) {
-          client.socket.send("message", message)
+          client.socket.send(
+            JSON.stringify({
+              type: "chat",
+              data: text
+            })
+          );
         }
-      })
+      });
     }
+  });
 
-  })
-
+  // ----------- Cleanup On Disconnect -----------
   socket.on("close", () => {
-    const index = users.findIndex((u) => u.socket === socket)
-    if (index !== -1) users.splice(index, 1)
-  })
-})
+    const index = users.findIndex((u) => u.socket === socket);
+    if (index !== -1) users.splice(index, 1);
+  });
+});
