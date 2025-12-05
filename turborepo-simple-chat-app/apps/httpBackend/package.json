@@ -20,6 +20,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@repo/validation":"workspace:*",
+    "@repo/utils":"workspace:*",
     "@types/express": "^5.0.6",
     "@types/node": "^22.15.3",
     "typescript": "^5.9.3"

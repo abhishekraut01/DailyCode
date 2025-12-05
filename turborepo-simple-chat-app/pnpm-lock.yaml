@@ -33,6 +33,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/Utils
       '@repo/validation':
         specifier: workspace:*
         version: link:../../packages/validation
@@ -108,6 +111,9 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1
     devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
