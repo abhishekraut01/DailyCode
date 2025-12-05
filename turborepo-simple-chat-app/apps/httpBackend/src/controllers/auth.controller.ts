@@ -9,4 +9,38 @@ export const handleInitSignup = AsyncHandler(async (req: Request, res: Response)
         throw new ApiError(400, 'Invalid User Input Schema', error.issues);
     }
 
+    // const existingUser = await prisma.users.findFirst({
+    //     where: { OR: [{ email }, { username }] },
+    // });
+
+    // if (existingUser) {
+    //     throw new ApiError(409, 'User already exists');
+    // }
+
+    // Create user in database
+    // const newUser = await prisma.users.create({
+    //     data: {
+    //         username,
+    //         email,
+    //     },
+    // });
+
+    // // Create JWT-based session
+    // const session = await createSession(
+    //     newUser.id,
+    //     req.ip,
+    //     req.headers['user-agent']
+    // );
+
+    // return res.status(201).json(
+    //     new ApiResponse(201, 'Signup successful', {
+    //         user: {
+    //             id: newUser.id,
+    //             username: newUser.username,
+    //             email: newUser.email,
+    //         },
+    //         tokens: session,
+    //     })
+    // );
+
 })

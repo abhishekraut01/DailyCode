@@ -24,6 +24,7 @@
     "@repo/validation": "workspace:*",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.15.3",
     "typescript": "^5.9.3"
   }
