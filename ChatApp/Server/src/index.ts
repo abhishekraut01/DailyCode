@@ -10,6 +10,7 @@ interface IUser {
 const users: IUser[] = [];
 
 wss.on("connection", (socket) => {
+  
   socket.on("message", (rawMessage) => {
     const parsed = JSON.parse(rawMessage.toString());
 
@@ -39,6 +40,7 @@ wss.on("connection", (socket) => {
 
       users.forEach((client) => {
         if (client.roomId === senderRoomId && client.socket !== socket) {
+
           client.socket.send(
             JSON.stringify({
               type: "chat",
@@ -47,6 +49,7 @@ wss.on("connection", (socket) => {
           );
         }
       });
+
     }
   });
 
