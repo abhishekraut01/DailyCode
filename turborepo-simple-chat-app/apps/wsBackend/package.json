@@ -13,8 +13,12 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
         "@types/node": "^22.15.3",
-        "typescript": "^5.9.3",
-        "@repo/typescript-config": "workspace:*"
+        "typescript": "^5.9.3"
+    },
+    "dependencies": {
+        "@types/ws": "^8.18.1",
+        "ws": "^8.18.3"
     }
 }
