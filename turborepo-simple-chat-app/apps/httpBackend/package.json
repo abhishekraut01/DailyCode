@@ -13,14 +13,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@repo/validation":"workspace:*",
-    "@repo/utils":"workspace:*",
+    "@repo/utils": "workspace:*",
+    "@repo/validation": "workspace:*",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/node": "^22.15.3",
     "typescript": "^5.9.3"
