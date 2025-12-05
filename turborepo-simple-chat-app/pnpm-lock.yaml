@@ -102,6 +102,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/Utils:
+    dependencies:
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.6
+        version: 5.0.6
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/eslint-config:
     devDependencies:
       '@eslint/js':
