@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
 import { prisma } from '@repo/db/prisma';
 
-export async function createSession(userId: string, ip?: string, ua?: string) {
+export async function createSession(userId: string, ip?: string, ua?: string): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> {
   try {
     // 1. Generate access token (JWT)
     const accessToken = jwt.sign(
