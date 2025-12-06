@@ -134,3 +134,28 @@ export const healthCheck = (req:Request, res:Response) => {
         timestamp: new Date().toISOString(),
     });
 };
+
+
+export const getCurrentUser = AsyncHandler(async (req, res) => {
+    if (!req.user?.id) {
+        throw new ApiError(401, "Unauthorized");
+    }
+
+    const user = await prisma.users.findUnique({
+        where: { id: req.user.id },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            createdAt: true
+        }
+    });
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "User fetched successfully", user));
+});

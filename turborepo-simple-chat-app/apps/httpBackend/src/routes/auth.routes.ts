@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { handleSignin, handleSignup, healthCheck } from '../controllers/auth.controller.js';
+import { getCurrentUser, handleSignin, handleSignup, healthCheck } from '../controllers/auth.controller.js';
+import { authenticate } from '../middlewares/auth.middleware.js';
 
 const router: Router = Router();
 
@@ -7,6 +8,7 @@ const router: Router = Router();
 router.post('/signup', handleSignup);
 router.post('/signin', handleSignin);
 router.get("/health", healthCheck);
+router.get("/me", authenticate, getCurrentUser);
 
 
 export default router;
