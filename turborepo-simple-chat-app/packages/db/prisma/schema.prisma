@@ -8,32 +8,57 @@ datasource db {
 }
 
 model Users {
-  id          String        @id @default(uuid())
-  username    String        @unique
-  email       String        @unique
-  password    String
-  sessions    Session[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id         String    @id @default(uuid())
+  username   String    @unique
+  email      String    @unique
+  password   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  sessions   Session[]
+  chats      Chats[]
+  rooms      Rooms[]       @relation("UserRooms") 
 
   @@index([email])
   @@index([username])
 }
 
-
-
 model Session {
   id           String   @id @default(uuid())
   userId       String
   user         Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   refreshToken String   @unique
   userAgent    String?
   ip           String?
+
   createdAt    DateTime @default(now())
   expiresAt    DateTime
-  lastUsedAt   DateTime @default(now())
 
   @@index([userId])
   @@index([refreshToken])
-  @@index([expiresAt])
+}
+
+model Rooms {
+  id        String    @id @default(uuid())
+  adminId   String
+  admin     Users     @relation("UserRooms", fields: [adminId], references: [id])
+
+  chats     Chats[]
+  createdAt DateTime  @default(now())
+}
+
+model Chats {
+  id        Int      @id @default(autoincrement())
+  message   String
+  userId    String
+  roomId    String
+
+  room      Rooms    @relation(fields: [roomId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([roomId])
+  @@index([userId])
 }

@@ -28,15 +28,13 @@ export const handleSignup = AsyncHandler(async (req, res) => {
     // 3. Hash Password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // 4. Create User (use transaction for safety)
-    const newUser = await prisma.$transaction(async (tx) => {
-        return tx.users.create({
-            data: {
-                username,
-                email,
-                password: hashedPassword,
-            },
-        });
+    // 4. Create User 
+    const newUser = await prisma.users.create({
+        data: {
+            username,
+            email,
+            password: hashedPassword,
+        },
     });
 
     // 5. Get accurate client IP
@@ -127,7 +125,7 @@ export const handleSignin = AsyncHandler(async (req, res) => {
     );
 });
 
-export const healthCheck = (req:Request, res:Response) => {
+export const healthCheck = (req: Request, res: Response) => {
     return res.status(200).json({
         status: "ok",
         uptime: process.uptime(),
