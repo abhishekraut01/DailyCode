@@ -23,7 +23,7 @@ export const authenticate = (
     const token = authHeader.split(' ')[1];
 
     if (!token) {
-      throw new ApiError(401, 'Authorization header missing ');
+      throw new ApiError(401, 'Authorization header missing');
     }
 
     const secret = process.env.JWT_ACCESS_SECRET;
