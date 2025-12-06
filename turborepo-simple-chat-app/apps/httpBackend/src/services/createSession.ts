@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
-import prisma from '';
+import { prisma } from '@repo/db/prisma';
 
 export async function createSession(userId: string, ip?: string, ua?: string) {
   try {
@@ -21,7 +21,7 @@ export async function createSession(userId: string, ip?: string, ua?: string) {
     );
 
     // 4. Store random token in DB
-    await prisma.sessions.create({
+    await prisma.session.create({
       data: {
         userId,
         refreshToken: refreshTokenId, // Random string

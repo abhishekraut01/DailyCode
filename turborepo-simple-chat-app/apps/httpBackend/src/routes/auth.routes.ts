@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { handleInitSignup } from '../controllers/auth.controller.js';
+import { handleSignup } from '../controllers/auth.controller.js';
 
 const router: Router = Router();
 
 // auth.routes.ts
-router.post('/signup', handleInitSignup);
+router.post('/signup', handleSignup);
 
 
 export default router;
