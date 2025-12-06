@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userSignUpSchema } from "@repo/validation/validation"
+import { userSignInSchema, userSignUpSchema } from "@repo/validation/validation"
 import { AsyncHandler, ApiResponse, ApiError } from "@repo/utils/utils"
 import { prisma } from "@repo/db/prisma";
 import { createSession } from "../services/createSession.js";
@@ -68,3 +68,69 @@ export const handleSignup = AsyncHandler(async (req, res) => {
             })
         );
 });
+
+
+export const handleSignin = AsyncHandler(async (req, res) => {
+    const { success, data, error } = userSignInSchema.safeParse(req.body);
+
+    if (!success) {
+        throw new ApiError(400, "Invalid Input Schema", error.issues);
+    }
+
+    const { identifier, password } = data;
+
+    // 1. Find user by email OR username
+    const user = await prisma.users.findFirst({
+        where: {
+            OR: [
+                { email: identifier },
+                { username: identifier }
+            ]
+        }
+    });
+
+    if (!user) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    // 2. Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    // 3. Extract IP + User-Agent
+    const clientIp =
+        req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+        req.ip ||
+        "unknown";
+
+    const userAgent = req.headers["user-agent"] || "unknown";
+
+    // 4. Create session tokens (access + refresh)
+    const tokens = await createSession(
+        user.id,
+        clientIp,
+        userAgent
+    );
+
+    // 5. Send response
+    return res.status(200).json(
+        new ApiResponse(200, "Signin successful", {
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+            },
+            tokens,
+        })
+    );
+});
+
+export const healthCheck = (req:Request, res:Response) => {
+    return res.status(200).json({
+        status: "ok",
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+    });
+};
