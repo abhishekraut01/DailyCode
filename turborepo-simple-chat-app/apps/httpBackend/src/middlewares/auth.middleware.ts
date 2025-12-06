@@ -10,7 +10,7 @@ interface TokenPayload {
 
 export const authenticate = (
   req: Request,
-  _res: Response,
+  _res: Response, 
   next: NextFunction
 ) => {
   try {

@@ -22,6 +22,7 @@
     "@repo/typescript-config": "workspace:*",
     "@repo/utils": "workspace:*",
     "@repo/validation": "workspace:*",
+    "@repo/db": "workspace:*",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
