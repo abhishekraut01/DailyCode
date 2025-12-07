@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import {  ApiError } from "@repo/utils/apiError"
+import { ApiError } from "@repo/utils/apiError";
 
 interface TokenPayload {
   sub: string; // userId
@@ -8,43 +8,28 @@ interface TokenPayload {
   exp?: number;
 }
 
-export const authenticate = (
-  req: Request,
-  _res: Response, 
-  next: NextFunction
-) => {
+export const authenticate = (req: Request, _res: Response, next: NextFunction) =>{
   try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new ApiError(401, 'Authorization header missing or malformed');
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token =
+      req.cookies?.accessToken ||
+      req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
-      throw new ApiError(401, 'Authorization header missing');
+      throw new ApiError(401, 'Token not found');
     }
 
-    const secret = process.env.JWT_ACCESS_SECRET;
-    if (!secret) throw new Error('JWT_ACCESS_SECRET missing in env');
+    const secretKey = process.env.JWT_ACCESS_SECRET;
 
-    // Verify token
-    const decoded = jwt.verify(token, secret) as TokenPayload;
-
-    // Attach user info to request object
-    req.user = {
-      id: decoded.sub,
-    };
-
-    return next();
-  } catch (error: any) {
-    if (error.name === 'TokenExpiredError') {
-      throw new ApiError(401, 'Access token expired');
+    if (!secretKey) {
+      throw new ApiError(
+        500,
+        'Server misconfiguration: Access token secret is missing.'
+      );
     }
-    if (error.name === 'JsonWebTokenError') {
-      throw new ApiError(401, 'Invalid token');
-    }
-    throw new ApiError(401, 'Unauthorized access');
+    const decoded = jwt.verify(token, secretKey) as TokenPayload;
+    req.user = { id: decoded.sub };
+    next();
+  } catch (error) {
+    next(error);
   }
 };

@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { userSignInSchema, userSignUpSchema } from "@repo/validation/authSchema"
-import {  ApiError } from "@repo/utils/apiError"
+import { ApiError } from "@repo/utils/apiError"
 import { ApiResponse } from "@repo/utils/apiResponse"
 import { AsyncHandler } from "@repo/utils/asyncHandler"
 import { prisma } from "@repo/db/prisma";
 import { createSession } from "../services/createSession.js";
 import bcrypt from "bcrypt";
+import { options, RefreshTokenPayload } from "../interface/index.js";
 
 
 export const handleSignup = AsyncHandler(async (req, res) => {
@@ -57,6 +59,8 @@ export const handleSignup = AsyncHandler(async (req, res) => {
     // 7. Return Response
     return res
         .status(201)
+        .cookie("accessToken", sessionTokens.accessToken, options)
+        .cookie("refreshToken", sessionTokens.refreshToken, options)
         .json(
             new ApiResponse(201, "Signup successful", {
                 user: {
@@ -115,16 +119,19 @@ export const handleSignin = AsyncHandler(async (req, res) => {
     );
 
     // 5. Send response
-    return res.status(200).json(
-        new ApiResponse(200, "Signin successful", {
-            user: {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-            },
-            tokens,
-        })
-    );
+    return res.status(200).
+        cookie("accessToken", tokens.accessToken, options).
+        cookie("refreshToken", tokens.refreshToken, options).
+        json(
+            new ApiResponse(200, "Signin successful", {
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                },
+                tokens,
+            })
+        );
 });
 
 
@@ -171,3 +178,71 @@ export const getCurrentUser = AsyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, "User fetched successfully", user));
 });
+
+
+export const refreshAccessToken = AsyncHandler(
+    async (req: Request, res: Response) => {
+
+        const refreshToken =
+            req.cookies?.refreshToken ||
+            req.header("Authorization")?.replace("Bearer ", "");
+
+        if (!refreshToken) {
+            throw new ApiError(401, "Refresh token not found");
+        }
+
+        const secretKey = process.env.JWT_REFRESH_SECRET;
+
+        if (!secretKey) {
+            throw new ApiError(500, "Server misconfiguration: Refresh token secret is missing.");
+        }
+
+        const decoded = jwt.verify(refreshToken, secretKey) as RefreshTokenPayload;
+
+        // Check if session exists
+        const session = await prisma.session.findFirst({
+            where: {
+                userId: decoded.sub,
+                refreshToken: decoded.tokenId,
+                expiresAt: {
+                    gt: new Date(),
+                },
+            },
+        });
+
+        if (!session) {
+            throw new ApiError(401, "Invalid session");
+        }
+
+        // Delete old session
+        await prisma.session.delete({
+            where: { id: session.id }
+        });
+
+        // Get client info for new session
+        const clientIp =
+            req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+            req.ip ||
+            "unknown";
+
+        const userAgent = req.headers["user-agent"] || "unknown";
+
+        // Create new session with fresh tokens
+        const tokens = await createSession(
+            decoded.sub,
+            clientIp,
+            userAgent
+        );
+
+        // Send response with new tokens
+        return res
+            .status(200)
+            .cookie("accessToken", tokens.accessToken, options)
+            .cookie("refreshToken", tokens.refreshToken, options)
+            .json(
+                new ApiResponse(200, "Access token refreshed successfully", {
+                    tokens,
+                })
+            );
+    }
+);
