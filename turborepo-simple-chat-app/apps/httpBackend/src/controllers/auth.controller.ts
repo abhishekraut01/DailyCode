@@ -136,6 +136,17 @@ export const healthCheck = (req: Request, res: Response) => {
     });
 };
 
+export const handleLogout = AsyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized");
+    }
+    // Delete all sessions for the user
+    await prisma.session.deleteMany({
+        where: { userId }
+    });
+    return res.status(200).json(new ApiResponse(200, "Logout successful"));
+});
 
 export const getCurrentUser = AsyncHandler(async (req, res) => {
     if (!req.user?.id) {
