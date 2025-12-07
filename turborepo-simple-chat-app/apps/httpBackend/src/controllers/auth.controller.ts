@@ -127,6 +127,7 @@ export const handleSignin = AsyncHandler(async (req, res) => {
     );
 });
 
+
 export const healthCheck = (req: Request, res: Response) => {
     return res.status(200).json({
         status: "ok",

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 const PORT = process.env.PORT || "8002"
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!
 
+
 const wss = new WebSocketServer({ port: Number(PORT) })
 
 wss.on("connection", (socket, req) => {
@@ -29,11 +30,11 @@ wss.on("connection", (socket, req) => {
             return;
         }
 
-
-
         // Continue handshake...
     } catch (err) {
         console.error("WS parse error:", err);
         socket.close(1011, "Internal server error");
     }
 });
+
+console.log(`WebSocket server is running on ws://localhost:${PORT}`)
