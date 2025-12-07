@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { ApiError } from "@repo/utils/utils";
+import {  ApiError } from "@repo/utils/apiError"
 
 interface TokenPayload {
   sub: string; // userId

@@ -2,12 +2,15 @@
   "name": "@repo/utils",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "exports":{
-    "./utils":"./src/index.ts"
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    "./apiError": "./src/backend/apiError.ts",
+    "./apiResponse": "./src/backend/apiResponse.ts",
+    "./asyncHandler": "./src/backend/asyncHandler.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --max-warnings 0"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +19,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^22.15.3",
     "typescript": "^5.9.3",
-    "@repo/typescript-config":"workspace:*"
+    "@repo/typescript-config": "workspace:*"
   },
   "dependencies": {
     "express": "^5.2.1"

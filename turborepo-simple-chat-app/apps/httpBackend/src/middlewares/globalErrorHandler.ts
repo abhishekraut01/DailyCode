@@ -1,4 +1,4 @@
-import { ApiError } from "@repo/utils/utils";
+import {  ApiError } from "@repo/utils/apiError"
 import { NextFunction, Request, Response } from 'express';
 
 const errorHandler = (
