@@ -1,36 +1,41 @@
 import { WebSocketServer, WebSocket } from 'ws'
-import jwt from 'jsonwebtoken'
-const PORT = process.env.PORT || "8002"
-const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!
+import checkAuth from './utils/checkAuth.js';
+import handleJoinRoom from './services/joinRoomService.js';
+import handleChat from './services/chatRoomService.js';
+import handleLeaveRoom from './services/leaveRoomService.js';
 
+const PORT = process.env.PORT || "8002"
 
 const wss = new WebSocketServer({ port: Number(PORT) })
 
-wss.on("connection", (socket, req) => {
+wss.on("connection", (socket: WebSocket, req) => {
     try {
-        if (!req.url) {
-            socket.close(1008, "Malformed request");
+        const userId = checkAuth(socket, req)
+
+        if (!userId) {
+            socket.close(1008, "Unauthorized");
             return;
         }
 
-        const host = req.headers.host || "localhost";
-        const url = new URL(req.url, `http://${host}`);
+        socket.on("message", (messageData) => {
+            const parsedData = JSON.parse(messageData.toString())
 
-        const token = url.searchParams.get("token");
+            switch (parsedData.type) {
+                case "join-room":
+                    handleJoinRoom(socket, userId, parsedData);
+                    break;
+                case "chat":
+                    handleChat(socket, userId, parsedData);
+                    break;
+                case "leave-room":
+                    handleLeaveRoom(socket, userId, parsedData);
+                    break;
+                default:
+                    console.log(`Received message from user ${userId}:`, parsedData);
+            }
+        })
 
-        if (!token) {
-            socket.close(1008, "Missing token");
-            return;
-        }
 
-        const decoded = jwt.verify(token, JWT_ACCESS_SECRET)
-
-        if (!decoded || decoded.sub) {
-            socket.close(1008, "JWT_ACCESS_SECRET is missing");
-            return;
-        }
-
-        // Continue handshake...
     } catch (err) {
         console.error("WS parse error:", err);
         socket.close(1011, "Internal server error");

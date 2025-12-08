@@ -12,7 +12,7 @@ export async function createSession(userId: string, ip?: string, ua?: string): P
       { sub: userId },
       process.env.JWT_ACCESS_SECRET!,
       //todo : add ACCESS_TOKEN_EXPIRY from .env
-      { expiresIn: '15m' }
+      { expiresIn: '360m' }
     );
 
     // 2. Generate RANDOM refresh token (not a JWT)
