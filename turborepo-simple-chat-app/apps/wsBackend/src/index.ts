@@ -3,6 +3,7 @@ import checkAuth from './utils/checkAuth.js';
 import handleJoinRoom from './services/joinRoomService.js';
 import handleChat from './services/chatRoomService.js';
 import handleLeaveRoom from './services/leaveRoomService.js';
+import { safeSend } from './utils/safeSend.js';
 
 const PORT = process.env.PORT || "8002"
 
@@ -31,7 +32,7 @@ wss.on("connection", (socket: WebSocket, req) => {
                     handleLeaveRoom(socket, userId, parsedData);
                     break;
                 default:
-                    console.log(`Received message from user ${userId}:`, parsedData);
+                    safeSend(socket, { type: "error", message: "Unknown message type" });
             }
         })
 
