@@ -8,12 +8,27 @@ interface IUser {
   avatar_url: string
 }
 
+function Clock() {
+  const [time, setTime] = useState<string>(new Date().toLocaleTimeString())
+
+  useEffect(() => {
+    setInterval(() => {
+      setTime(new Date().toLocaleTimeString())
+      console.log("hii")
+    }, (1000));
+  }, [])
+
+  return (
+    <div>
+      <p>Time : {time}</p>
+    </div>
+  )
+}
 const DEFAULT_PER_PAGE = "30"
 
 export default function App() {
   const [users, setUsers] = useState<IUser[]>([])
   const [userInput, setUserInput] = useState(DEFAULT_PER_PAGE)
-
   // Reusable fetch function
   const fetchUsers = async (perPage: string) => {
     try {
@@ -32,6 +47,8 @@ export default function App() {
       setUsers([]) // or handle error state separately
     }
   }
+
+
 
   useEffect(() => {
     fetchUsers(DEFAULT_PER_PAGE)
@@ -55,7 +72,7 @@ export default function App() {
             />
             <button onClick={handleFetchUserOnClick}>Get Users</button>
           </div>
-
+          <Clock />
           <span>{users.length} profiles fetched from GitHub</span>
         </div>
 
