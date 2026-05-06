@@ -76,7 +76,7 @@ system_prompt = f'''
 
     example :
     user_input : Tell me what is temperature in hinganghat and what is the status of weather 
-
+de
     Output : 
     {{"step":"think" , "content":"User is asking for temperature in hinganghat and current Weather Details"}},
     {{"step":"Plan" , "content":"I Need to call get_weather tool in order to get current weather details"}},
