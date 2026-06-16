@@ -6,7 +6,7 @@ interface Room {
     sockets: WebSocket[];
 }
 
-export const rooms: Record<string, Room> = {};
+export const rooms = new Map<string, Room>();
 
 wss.on("connection", (socket: WebSocket) => {
     socket.on("error", () => {
@@ -25,27 +25,50 @@ wss.on("connection", (socket: WebSocket) => {
 
             const { roomId, type } = parseData;
 
-            // Validate roomId
             if (!roomId || typeof roomId !== "string") {
                 socket.send(JSON.stringify({ error: "Invalid room ID" }));
                 return;
             }
 
-            // Handle join-room type
             if (type === "join-room") {
-                if (!rooms[roomId]) {
-                    rooms[roomId] = { sockets: [] };
+                if (!rooms.has(roomId)) {
+                    rooms.set(roomId, { sockets: [] });
                 }
 
-                // Avoid adding the same socket multiple times
-                if (!rooms[roomId].sockets.includes(socket)) {
-                    rooms[roomId].sockets.push(socket);
+                const room = rooms.get(roomId)!;
+
+                if (!room.sockets.includes(socket)) {
+                    room.sockets.push(socket);
                     socket.send(JSON.stringify({ message: `Joined room ${roomId}` }));
                 } else {
                     socket.send(JSON.stringify({ message: `Already in room ${roomId}` }));
                 }
 
                 console.log(`Socket joined room: ${roomId}`);
+            }
+
+            if (type === "chat") {
+                const { message: chatMessage } = parseData;
+
+                if (!chatMessage || typeof chatMessage !== "string") {
+                    socket.send(JSON.stringify({ error: "Invalid chat message" }));
+                    return;
+                }
+
+                const room = rooms.get(roomId);
+
+                if (!room) {
+                    socket.send(JSON.stringify({ error: "Room not found. Join a room first." }));
+                    return;
+                }
+
+                const payload = JSON.stringify({ type: "chat", roomId, message: chatMessage });
+
+                for (const peer of room.sockets) {
+                    if (peer !== socket && peer.readyState === WebSocket.OPEN) {
+                        peer.send(payload);
+                    }
+                }
             }
 
         } catch (error) {
@@ -58,9 +81,20 @@ wss.on("connection", (socket: WebSocket) => {
         }
     });
 
-
-
     socket.on("close", () => {
-        console.log("socket is close")
+        console.log("socket is closed");
+
+        for (const [roomId, room] of rooms) {
+            const index = room.sockets.indexOf(socket);
+            if (index !== -1) {
+                room.sockets.splice(index, 1);
+                console.log(`Socket removed from room: ${roomId}`);
+
+                if (room.sockets.length === 0) {
+                    rooms.delete(roomId);
+                    console.log(`Room deleted (empty): ${roomId}`);
+                }
+            }
+        }
     })
 })
